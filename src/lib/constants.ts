@@ -1,4 +1,4 @@
-import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText } from 'lucide-react';
+import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText, Languages } from 'lucide-react';
 import type { UserRole } from '@/components/auth-provider';
 
 export const navLinks = {
@@ -8,6 +8,7 @@ export const navLinks = {
     { href: '/orders', label: 'My Orders', icon: ListOrdered },
     { href: '/recommendations', label: 'For You', icon: Sparkles },
     { href: '/stores', label: 'Stores', icon: MapPin },
+    { href: '/translate', label: 'Translate', icon: Languages },
   ],
   employee: [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
