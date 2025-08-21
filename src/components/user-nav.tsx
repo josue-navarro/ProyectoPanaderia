@@ -1,6 +1,7 @@
 'use client';
 
 import { useContext } from 'react';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { AuthContext } from './auth-provider';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Languages } from 'lucide-react';
 
 export function UserNav() {
   const { role, logout } = useContext(AuthContext);
@@ -47,6 +48,12 @@ export function UserNav() {
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
+          <Link href="/translate" passHref>
+            <DropdownMenuItem>
+              <Languages className="mr-2 h-4 w-4" />
+              <span>Translate</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

@@ -8,7 +8,6 @@ export const navLinks = {
     { href: '/orders', label: 'My Orders', icon: ListOrdered },
     { href: '/recommendations', label: 'For You', icon: Sparkles },
     { href: '/stores', label: 'Stores', icon: MapPin },
-    { href: '/translate', label: 'Translate', icon: Languages },
   ],
   employee: [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
