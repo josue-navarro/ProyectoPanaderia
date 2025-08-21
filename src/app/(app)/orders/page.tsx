@@ -9,6 +9,8 @@ import { Check, Circle, CookingPot, ShoppingCart, Truck } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { OrderStatus } from "@/lib/types";
+import { useContext } from "react";
+import { LanguageContext } from "@/components/language-provider";
 
 const mockCart = [
   { ...products[0], quantity: 1 },
@@ -18,32 +20,34 @@ const cartTotal = mockCart.reduce((sum, item) => sum + item.price * item.quantit
 
 const trackingOrder = orders[1];
 
-const statusSteps: { status: OrderStatus; icon: React.ElementType; label: string; description: string }[] = [
-    { status: 'Pending', icon: Circle, label: 'Order Placed', description: 'We have received your order.'},
-    { status: 'In Progress', icon: CookingPot, label: 'In Progress', description: 'Our bakers are working on it.'},
-    { status: 'Ready for Pickup', icon: ShoppingCart, label: 'Ready for Pickup', description: 'Your order is ready to be collected.'},
-    { status: 'Completed', icon: Check, label: 'Completed', description: 'You have collected your order.'}
+export default function OrdersPage() {
+  const { t } = useContext(LanguageContext);
+  
+  const statusSteps: { status: OrderStatus; icon: React.ElementType; label: string; description: string }[] = [
+    { status: 'Pending', icon: Circle, label: t('order_status_placed_label'), description: t('order_status_placed_desc')},
+    { status: 'In Progress', icon: CookingPot, label: t('order_status_progress_label'), description: t('order_status_progress_desc')},
+    { status: 'Ready for Pickup', icon: ShoppingCart, label: t('order_status_ready_label'), description: t('order_status_ready_desc')},
+    { status: 'Completed', icon: Check, label: t('order_status_completed_label'), description: t('order_status_completed_desc')}
 ];
 
-export default function OrdersPage() {
   const currentStatusIndex = statusSteps.findIndex(step => step.status === trackingOrder.status);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Your Orders</h1>
-        <p className="text-muted-foreground">Manage your cart and track your purchases.</p>
+        <h1 className="text-3xl font-bold font-headline">{t('orders_title')}</h1>
+        <p className="text-muted-foreground">{t('orders_description')}</p>
       </div>
       <Tabs defaultValue="cart" className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-md">
-          <TabsTrigger value="cart">Shopping Cart</TabsTrigger>
-          <TabsTrigger value="track">Track Order</TabsTrigger>
+          <TabsTrigger value="cart">{t('shopping_cart')}</TabsTrigger>
+          <TabsTrigger value="track">{t('track_order')}</TabsTrigger>
         </TabsList>
         <TabsContent value="cart">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Your Cart</CardTitle>
-              <CardDescription>Review and place your order.</CardDescription>
+              <CardTitle className="font-headline">{t('your_cart')}</CardTitle>
+              <CardDescription>{t('review_and_place_order')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {mockCart.map(item => (
@@ -52,7 +56,7 @@ export default function OrdersPage() {
                     <Image src={item.imageUrl} alt={item.name} width={64} height={64} className="rounded-md object-cover" data-ai-hint="bakery product" />
                     <div>
                       <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                      <p className="text-sm text-muted-foreground">{t('quantity')}: {item.quantity}</p>
                     </div>
                   </div>
                   <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
@@ -60,20 +64,20 @@ export default function OrdersPage() {
               ))}
               <Separator />
               <div className="flex justify-between font-bold text-lg">
-                <p>Total</p>
+                <p>{t('total')}</p>
                 <p>${cartTotal.toFixed(2)}</p>
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Proceed to Checkout</Button>
+              <Button className="w-full">{t('proceed_to_checkout')}</Button>
             </CardFooter>
           </Card>
         </TabsContent>
         <TabsContent value="track">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline">Track Order #{trackingOrder.id}</CardTitle>
-                    <CardDescription>Estimated Arrival: 15-20 minutes</CardDescription>
+                    <CardTitle className="font-headline">{t('track_order')} #{trackingOrder.id}</CardTitle>
+                    <CardDescription>{t('estimated_arrival')}: 15-20 {t('minutes')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="relative flex flex-col gap-8 ml-4">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useContext } from 'react';
-import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,12 +11,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from '@/components/ui/dropdown-menu';
 import { AuthContext } from './auth-provider';
-import { LogOut, User, Languages } from 'lucide-react';
+import { LanguageContext } from './language-provider';
+import { LogOut, User, Languages, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function UserNav() {
   const { role, logout } = useContext(AuthContext);
+  const { language, setLanguage, t } = useContext(LanguageContext);
 
   const getInitials = (role: string) => {
     return role.charAt(0).toUpperCase();
@@ -38,27 +44,39 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Signed in as</p>
-            <p className="text-xs leading-none text-muted-foreground capitalize">{role}</p>
+            <p className="text-sm font-medium leading-none">{t('signed_in_as')}</p>
+            <p className="text-xs leading-none text-muted-foreground capitalize">{t(`role_${role}`)}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem disabled>
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>{t('profile')}</span>
           </DropdownMenuItem>
-          <Link href="/translate" passHref>
-            <DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
               <Languages className="mr-2 h-4 w-4" />
-              <span>Translate</span>
-            </DropdownMenuItem>
-          </Link>
+              <span>{t('language')}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => setLanguage('en')}>
+                       <Check className={cn("mr-2 h-4 w-4", language !== 'en' && 'opacity-0')} />
+                        <span>English</span>
+                    </DropdownMenuItem>
+                     <DropdownMenuItem onClick={() => setLanguage('es')}>
+                        <Check className={cn("mr-2 h-4 w-4", language !== 'es' && 'opacity-0')} />
+                        <span>Español</span>
+                    </DropdownMenuItem>
+                </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t('logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

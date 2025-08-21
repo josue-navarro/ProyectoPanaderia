@@ -8,16 +8,18 @@ import { products } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, CheckCircle } from 'lucide-react';
-import React from 'react';
+import React, { useContext } from 'react';
+import { LanguageContext } from '@/components/language-provider';
 
 function ProductCard({ product }: { product: Product }) {
+  const { t } = useContext(LanguageContext);
   const { toast } = useToast();
   const [isAdded, setIsAdded] = React.useState(false);
 
   const handleAddToCart = () => {
     toast({
-      title: 'Added to cart!',
-      description: `${product.name} is waiting for you.`,
+      title: t('added_to_cart_title'),
+      description: t('added_to_cart_desc', { productName: product.name }),
     });
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
@@ -35,7 +37,7 @@ function ProductCard({ product }: { product: Product }) {
           data-ai-hint="bakery product"
         />
         {!product.isAvailable && (
-          <Badge variant="destructive" className="absolute top-2 right-2">Sold Out</Badge>
+          <Badge variant="destructive" className="absolute top-2 right-2">{t('sold_out')}</Badge>
         )}
       </CardHeader>
       <CardContent className="flex-grow p-4">
@@ -53,11 +55,11 @@ function ProductCard({ product }: { product: Product }) {
         >
           {isAdded ? (
             <>
-              <CheckCircle className="mr-2 h-4 w-4" /> Added
+              <CheckCircle className="mr-2 h-4 w-4" /> {t('added')}
             </>
           ) : (
             <>
-              <ShoppingCart className="mr-2 h-4 w-4" /> Add to cart
+              <ShoppingCart className="mr-2 h-4 w-4" /> {t('add_to_cart')}
             </>
           )}
         </Button>
@@ -68,11 +70,12 @@ function ProductCard({ product }: { product: Product }) {
 
 
 export default function ProductsPage() {
+  const { t } = useContext(LanguageContext);
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Our Daily Menu</h1>
-        <p className="text-muted-foreground">Freshly baked goods, made with love.</p>
+        <h1 className="text-3xl font-bold font-headline">{t('products_title')}</h1>
+        <p className="text-muted-foreground">{t('products_description')}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

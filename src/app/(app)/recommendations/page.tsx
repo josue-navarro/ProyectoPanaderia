@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,10 +9,12 @@ import { generateProductRecommendations, GenerateProductRecommendationsOutput } 
 import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Image from 'next/image';
+import { LanguageContext } from '@/components/language-provider';
 
 const popularCombinations = ['Sourdough Loaf', 'Croissant', 'Espresso'];
 
 export default function RecommendationsPage() {
+  const { t } = useContext(LanguageContext);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<GenerateProductRecommendationsOutput | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -39,17 +41,17 @@ export default function RecommendationsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-          <Sparkles className="text-accent" /> AI Product Recommendations
+          <Sparkles className="text-accent" /> {t('recommendations_title')}
         </h1>
-        <p className="text-muted-foreground">Discover new treats based on your tastes.</p>
+        <p className="text-muted-foreground">{t('recommendations_description')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Your Past Purchases</CardTitle>
-              <CardDescription>Select items you've enjoyed before.</CardDescription>
+              <CardTitle className="font-headline">{t('past_purchases_title')}</CardTitle>
+              <CardDescription>{t('past_purchases_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 max-h-96 overflow-y-auto">
               {products.map(product => (
@@ -73,10 +75,10 @@ export default function RecommendationsPage() {
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Thinking...
+                {t('thinking')}...
               </>
             ) : (
-              'Get Recommendations'
+              t('get_recommendations')
             )}
           </Button>
         </div>
@@ -84,14 +86,14 @@ export default function RecommendationsPage() {
         <div className="lg:col-span-2">
           <Card className="min-h-[30rem] flex flex-col">
             <CardHeader>
-              <CardTitle className="font-headline">Suggested For You</CardTitle>
-              <CardDescription>Here's what our AI thinks you'll love next.</CardDescription>
+              <CardTitle className="font-headline">{t('suggested_for_you_title')}</CardTitle>
+              <CardDescription>{t('suggested_for_you_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow flex items-center justify-center">
               {isPending ? (
                 <div className="flex flex-col items-center text-muted-foreground">
                   <Loader2 className="h-8 w-8 animate-spin mb-2" />
-                  <p>Baking up fresh recommendations...</p>
+                  <p>{t('baking_recommendations')}</p>
                 </div>
               ) : recommendations && recommendations.recommendations.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
@@ -112,9 +114,9 @@ export default function RecommendationsPage() {
               ) : (
                  <Alert>
                     <Lightbulb className="h-4 w-4" />
-                    <AlertTitle>Ready to Discover?</AlertTitle>
+                    <AlertTitle>{t('discover_ready_title')}</AlertTitle>
                     <AlertDescription>
-                      Select some items you've purchased and click "Get Recommendations" to see your personalized suggestions.
+                      {t('discover_ready_desc')}
                     </AlertDescription>
                 </Alert>
               )}

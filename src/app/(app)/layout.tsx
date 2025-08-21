@@ -15,11 +15,13 @@ import { Button } from '@/components/ui/button';
 import { MainNav } from '@/components/main-nav';
 import { UserNav } from '@/components/user-nav';
 import { AuthContext } from '@/components/auth-provider';
+import { LanguageContext } from '@/components/language-provider';
 import { Croissant, LogOut } from 'lucide-react';
 import React from 'react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { logout } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
   const router = useRouter();
 
   React.useEffect(() => {
@@ -44,7 +46,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
           <Button variant="ghost" className="w-full justify-start gap-2" onClick={logout}>
             <LogOut className="h-5 w-5" />
-            <span>Logout</span>
+            <span>{t('logout')}</span>
           </Button>
         </SidebarFooter>
       </Sidebar>

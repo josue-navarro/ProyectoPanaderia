@@ -1,24 +1,25 @@
 import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText, Languages } from 'lucide-react';
 import type { UserRole } from '@/components/auth-provider';
+import type { TranslationKey } from './translations';
 
-export const navLinks = {
+export const navLinks: Record<UserRole, { href: string; label: TranslationKey; icon: React.ElementType }[]> = {
   customer: [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { href: '/products', label: 'Products', icon: Croissant },
-    { href: '/orders', label: 'My Orders', icon: ListOrdered },
-    { href: '/recommendations', label: 'For You', icon: Sparkles },
-    { href: '/stores', label: 'Stores', icon: MapPin },
+    { href: '/dashboard', label: 'nav_dashboard', icon: LayoutGrid },
+    { href: '/products', label: 'nav_products', icon: Croissant },
+    { href: '/orders', label: 'nav_my_orders', icon: ListOrdered },
+    { href: '/recommendations', label: 'nav_for_you', icon: Sparkles },
+    { href: '/stores', label: 'nav_stores', icon: MapPin },
   ],
   employee: [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { href: '/orders', label: 'Manage Orders', icon: ListOrdered },
+    { href: '/dashboard', label: 'nav_dashboard', icon: LayoutGrid },
+    { href: '/orders', label: 'nav_manage_orders', icon: ListOrdered },
   ],
   admin: [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { href: '/products', label: 'Manage Products', icon: Croissant },
-    { href: '/orders', label: 'All Orders', icon: ListOrdered },
-    { href: '/stores', label: 'Manage Stores', icon: MapPin },
-    { href: '/users', label: 'Manage Users', icon: Users },
-    { href: '/reports', label: 'Reports', icon: FileText },
+    { href: '/dashboard', label: 'nav_dashboard', icon: LayoutGrid },
+    { href: '/products', label: 'nav_manage_products', icon: Croissant },
+    { href: '/orders', label: 'nav_all_orders', icon: ListOrdered },
+    { href: '/stores', label: 'nav_manage_stores', icon: MapPin },
+    { href: '/users', label: 'nav_manage_users', icon: Users },
+    { href: '/reports', label: 'nav_reports', icon: FileText },
   ],
-} satisfies Record<UserRole, { href: string; label: string; icon: React.ElementType }[]>;
+};

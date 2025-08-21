@@ -3,13 +3,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { stores } from '@/lib/data';
 import { MapPin, Phone, Clock } from 'lucide-react';
+import { useContext } from 'react';
+import { LanguageContext } from '@/components/language-provider';
 
 export default function StoresPage() {
+  const { t } = useContext(LanguageContext);
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Our Stores</h1>
-        <p className="text-muted-foreground">Find a Panadería Cloud near you.</p>
+        <h1 className="text-3xl font-bold font-headline">{t('stores_title')}</h1>
+        <p className="text-muted-foreground">{t('stores_description')}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stores.map(store => (

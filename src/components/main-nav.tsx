@@ -7,10 +7,12 @@ import { cn } from '@/lib/utils';
 import { navLinks } from '@/lib/constants';
 import { AuthContext } from './auth-provider';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { LanguageContext } from './language-provider';
 
 export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
   const { role } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
 
   const links = navLinks[role] || [];
 
@@ -23,10 +25,10 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
               <SidebarMenuButton
                 isActive={pathname === link.href}
                 className="w-full justify-start"
-                tooltip={link.label}
+                tooltip={t(link.label)}
               >
                 <link.icon className="h-5 w-5" />
-                <span>{link.label}</span>
+                <span>{t(link.label)}</span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
