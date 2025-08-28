@@ -14,7 +14,7 @@ export const translations = {
     profile: 'Profile',
     language: 'Language',
     no_account: "Don't have an account?",
-    create_account_button: "Create Account",
+    create_account_button: "Create",
     invalid_credentials: 'Invalid username or password.',
     login_failed: 'Login Failed',
 
@@ -141,7 +141,7 @@ export const translations = {
     profile: 'Perfil',
     language: 'Idioma',
     no_account: '¿No tienes una cuenta?',
-    create_account_button: 'Crear Cuenta',
+    create_account_button: 'Crear',
     invalid_credentials: 'Usuario o contraseña no válidos.',
     login_failed: 'Inicio de Sesión Fallido',
     
