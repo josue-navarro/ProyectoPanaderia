@@ -70,7 +70,7 @@ function SignupForm() {
                   title: t('signup_success'),
                   description: t('signup_success_desc'),
                 });
-                router.push('/dashboard');
+                router.push('/');
             }
         } catch (err: any) {
             setError(err.message);

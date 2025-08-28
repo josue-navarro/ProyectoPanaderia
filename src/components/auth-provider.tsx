@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       ...userData,
     };
     users.push(newUser); // In a real app, this would be an API call
-    setUser(newUser);
+    // Do not log the user in automatically after signup
     return true;
   };
 
