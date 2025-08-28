@@ -4,17 +4,11 @@ import { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AuthContext, UserRole } from '@/components/auth-provider';
-import { Croissant, Languages, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { AuthContext } from '@/components/auth-provider';
+import { Croissant, Languages, Check, Lightbulb } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,24 +17,41 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Lightbulb } from 'lucide-react';
-
+import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
-  const { setRole, hasAccount, createAccount } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
 
-  const handleLogin = (role: UserRole) => {
-    setRole(role);
-    router.push('/dashboard');
-  };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleCreateAccount = (role: UserRole) => {
-    createAccount(role);
-    setOpen(false);
-    router.push('/dashboard');
+  const handleLogin = async () => {
+    setError('');
+    try {
+      const success = await login(username, password);
+      if (success) {
+        router.push('/dashboard');
+      } else {
+        setError('Invalid username or password.');
+         toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Invalid username or password.",
+        })
+      }
+    } catch (err: any) {
+      setError(err.message);
+       toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: err.message,
+        })
+    }
   };
 
   return (
@@ -72,58 +83,56 @@ export default function LoginPage() {
         </div>
         <p className="text-lg text-muted-foreground">{t('app_subtitle')}</p>
       </div>
+
       <Card className="w-full max-w-sm mt-12 shadow-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-headline">{t('login_welcome_back')}</CardTitle>
-          <CardDescription>{t('login_select_role')}</CardDescription>
+          <CardDescription>{t('login_enter_credentials')}</CardDescription>
         </CardHeader>
-        <CardContent>
-          {!hasAccount && (
-             <Alert className="mb-4">
-                <Lightbulb className="h-4 w-4" />
-                <AlertTitle>{t('no_account_alert_title')}</AlertTitle>
+        <CardContent className="grid gap-4">
+           {error && (
+             <Alert variant="destructive">
                 <AlertDescription>
-                  {t('no_account_alert_desc')}
+                  {error}
                 </AlertDescription>
             </Alert>
           )}
-          <div className="grid gap-4">
-            <Button onClick={() => handleLogin('customer')} className="w-full" disabled={!hasAccount}>
-              {t('sign_in_as')} {t('role_customer')}
+          <div className="grid gap-2">
+            <Label htmlFor="username">{t('username')}</Label>
+            <Input 
+              id="username" 
+              type="text" 
+              placeholder={t('username_placeholder')}
+              required 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">{t('password')}</Label>
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="********" 
+              required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+           <Button onClick={handleLogin} className="w-full">
+              {t('sign_in')}
             </Button>
-            <Button onClick={() => handleLogin('employee')} variant="secondary" className="w-full" disabled={!hasAccount}>
-               {t('sign_in_as')} {t('role_employee')}
+        </CardContent>
+        <CardFooter className="flex flex-col items-center">
+          <p className="text-xs text-muted-foreground">{t('no_account')}</p>
+          <div className="flex gap-2">
+            <Button asChild variant="link" size="sm">
+                <Link href="/signup?role=customer">{t('create_customer_account')}</Link>
             </Button>
-            <Button onClick={() => handleLogin('admin')} variant="outline" className="w-full" disabled={!hasAccount}>
-               {t('sign_in_as')} {t('role_admin')}
+             <Button asChild variant="link" size="sm">
+                <Link href="/signup?role=employee">{t('create_employee_account')}</Link>
             </Button>
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col">
-            <p className="text-xs text-muted-foreground mb-2">{t('no_account')}</p>
-             <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button variant="link" className="w-full">
-                  {t('create_account_button')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="font-headline">{t('create_account_title')}</DialogTitle>
-                  <DialogDescription>
-                    {t('create_account_desc')}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                   <Button onClick={() => handleCreateAccount('customer')} className="w-full">
-                      {t('create_account_as')} {t('role_customer')}
-                    </Button>
-                    <Button onClick={() => handleCreateAccount('employee')} variant="secondary" className="w-full">
-                      {t('create_account_as')} {t('role_employee')}
-                    </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
         </CardFooter>
       </Card>
     </main>

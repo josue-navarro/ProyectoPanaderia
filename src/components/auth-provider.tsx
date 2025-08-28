@@ -2,46 +2,67 @@
 
 import React, { createContext, useState, ReactNode, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-
-export type UserRole = 'admin' | 'employee' | 'customer';
+import { users } from '@/lib/data';
+import type { User, UserRole } from '@/lib/types';
 
 interface AuthContextType {
-  role: UserRole;
-  setRole: (role: UserRole) => void;
+  user: User | null;
+  role: UserRole | null;
+  login: (username: string, password: string) => Promise<boolean>;
+  signup: (userData: Omit<User, 'id'>) => Promise<boolean>;
   logout: () => void;
-  hasAccount: boolean;
-  createAccount: (role: UserRole) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  role: 'customer',
-  setRole: () => {},
+  user: null,
+  role: null,
+  login: async () => false,
+  signup: async () => false,
   logout: () => {},
-  hasAccount: false,
-  createAccount: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [role, setRoleState] = useState<UserRole>('customer');
-  const [hasAccount, setHasAccount] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
-  const setRole = (newRole: UserRole) => {
-    setRoleState(newRole);
+  const login = async (username: string, password: string): Promise<boolean> => {
+    const foundUser = users.find((u) => u.username === username);
+    if (foundUser && foundUser.password === password) {
+      setUser(foundUser);
+      return true;
+    }
+    return false;
   };
-
-  const createAccount = (newRole: UserRole) => {
-    setRoleState(newRole);
-    setHasAccount(true);
+  
+  const signup = async (userData: Omit<User, 'id'>): Promise<boolean> => {
+    const existingUser = users.find(u => u.username === userData.username || u.email === userData.email);
+    if (existingUser) {
+      throw new Error('User with this username or email already exists.');
+    }
+    const newUser: User = {
+      id: `user_${Date.now()}`,
+      ...userData,
+    };
+    users.push(newUser); // In a real app, this would be an API call
+    setUser(newUser);
+    return true;
   };
 
   const logout = () => {
-    // In a real app, you'd clear tokens here
-    // We keep hasAccount true so the user can log back in
+    setUser(null);
     router.push('/');
   };
 
-  const value = useMemo(() => ({ role, setRole, logout, hasAccount, createAccount }), [role, hasAccount]);
+  const value = useMemo(() => ({
+      user,
+      role: user?.role || null,
+      login,
+      signup,
+      logout,
+    }), [user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+// Export UserRole to be used in other components if needed without importing from types
+export type { UserRole };

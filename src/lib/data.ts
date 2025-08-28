@@ -1,4 +1,17 @@
-import type { Product, Store, Order } from './types';
+
+import type { Product, Store, Order, User } from './types';
+import { users as appUsers } from '@/lib/data';
+
+export const users: User[] = [
+    {
+        id: 'user_admin',
+        fullName: 'Admin User',
+        email: 'admin@panaderia.cloud',
+        username: 'admin',
+        password: 'Password1',
+        role: 'admin',
+    }
+];
 
 export const products: Product[] = [
   {

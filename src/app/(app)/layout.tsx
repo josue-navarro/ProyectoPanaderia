@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   SidebarProvider,
@@ -20,14 +20,23 @@ import { Croissant, LogOut } from 'lucide-react';
 import React from 'react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const { t } = useContext(LanguageContext);
   const router = useRouter();
 
-  React.useEffect(() => {
-    // In a real app, you'd check for a valid token here.
-    // If no token, router.push('/login');
-  }, [router]);
+  useEffect(() => {
+    if (!user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

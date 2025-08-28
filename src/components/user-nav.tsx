@@ -22,21 +22,29 @@ import { LogOut, User, Languages, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function UserNav() {
-  const { role, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const { language, setLanguage, t } = useContext(LanguageContext);
 
-  const getInitials = (role: string) => {
-    return role.charAt(0).toUpperCase();
+  const getInitials = (name: string) => {
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="/avatars/01.png" alt={`@${role}`} />
+            <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
             <AvatarFallback className="bg-primary text-primary-foreground font-bold">
-              {getInitials(role)}
+              {getInitials(user.fullName)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -44,8 +52,8 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{t('signed_in_as')}</p>
-            <p className="text-xs leading-none text-muted-foreground capitalize">{t(`role_${role}`)}</p>
+            <p className="text-sm font-medium leading-none">{user.fullName}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

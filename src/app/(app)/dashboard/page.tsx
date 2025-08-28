@@ -9,7 +9,7 @@ import { Croissant, ListOrdered, Sparkles, ArrowRight } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
 
 export default function DashboardPage() {
-  const { role } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { t } = useContext(LanguageContext);
 
   const CustomerDashboard = () => (
@@ -17,7 +17,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="col-span-full">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">{t('dashboard_customer_welcome_title')}</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('dashboard_customer_welcome_title', { name: user!.fullName.split(' ')[0] })}</CardTitle>
             <CardDescription>{t('dashboard_customer_welcome_desc')}</CardDescription>
           </CardHeader>
         </Card>
@@ -84,15 +84,19 @@ export default function DashboardPage() {
         </Card>
      </div>
   );
+  
+  if (!user) {
+    return null; // Or a loading indicator
+  }
 
   return (
     <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight font-headline">
-          <span className="capitalize">{t(`role_${role}`)}</span> {t('dashboard')}
+          <span className="capitalize">{t(`role_${user.role}`)}</span> {t('dashboard')}
         </h2>
       </div>
-      {role === 'customer' ? <CustomerDashboard /> : <StaffDashboard />}
+      {user.role === 'customer' ? <CustomerDashboard /> : <StaffDashboard />}
     </div>
   );
 }

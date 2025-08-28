@@ -1,3 +1,15 @@
+export type UserRole = 'admin' | 'employee' | 'customer';
+
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  username: string;
+  password?: string; // In a real app, this would be a hash
+  role: UserRole;
+}
+
 export interface Product {
   id: string;
   name: string;
