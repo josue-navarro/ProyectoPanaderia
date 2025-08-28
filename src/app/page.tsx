@@ -1,20 +1,36 @@
 'use client';
 
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthContext, UserRole } from '@/components/auth-provider';
-import { Croissant } from 'lucide-react';
+import { Croissant, UserPlus } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter
+} from "@/components/ui/dialog";
 
 export default function LoginPage() {
   const { setRole } = useContext(AuthContext);
   const { t } = useContext(LanguageContext);
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   const handleLogin = (role: UserRole) => {
     setRole(role);
+    router.push('/dashboard');
+  };
+
+  const handleCreateAccount = (role: UserRole) => {
+    setRole(role);
+    setOpen(false);
     router.push('/dashboard');
   };
 
@@ -45,6 +61,32 @@ export default function LoginPage() {
             </Button>
           </div>
         </CardContent>
+        <CardFooter className="flex flex-col">
+            <p className="text-xs text-muted-foreground mb-2">{t('no_account')}</p>
+             <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant="link" className="w-full">
+                  {t('create_account_button')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="font-headline">{t('create_account_title')}</DialogTitle>
+                  <DialogDescription>
+                    {t('create_account_desc')}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                   <Button onClick={() => handleCreateAccount('customer')} className="w-full">
+                      {t('create_account_as')} {t('role_customer')}
+                    </Button>
+                    <Button onClick={() => handleCreateAccount('employee')} variant="secondary" className="w-full">
+                      {t('create_account_as')} {t('role_employee')}
+                    </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+        </CardFooter>
       </Card>
     </main>
   );

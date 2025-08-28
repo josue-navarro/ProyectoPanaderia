@@ -11,6 +11,11 @@ export const translations = {
     signed_in_as: 'Signed in as',
     profile: 'Profile',
     language: 'Language',
+    no_account: "Don't have an account?",
+    create_account_button: "Create one now",
+    create_account_title: "Create a New Account",
+    create_account_desc: "Choose the type of account you'd like to create. This will redirect you to the appropriate dashboard.",
+    create_account_as: 'Create account as',
 
     nav_dashboard: 'Dashboard',
     nav_products: 'Products',
@@ -114,6 +119,11 @@ export const translations = {
     signed_in_as: 'Sesión iniciada como',
     profile: 'Perfil',
     language: 'Idioma',
+    no_account: '¿No tienes una cuenta?',
+    create_account_button: 'Crea una ahora',
+    create_account_title: 'Crear una Nueva Cuenta',
+    create_account_desc: 'Elige el tipo de cuenta que te gustaría crear. Esto te redirigirá al panel apropiado.',
+    create_account_as: 'Crear cuenta como',
 
     nav_dashboard: 'Panel',
     nav_products: 'Productos',
