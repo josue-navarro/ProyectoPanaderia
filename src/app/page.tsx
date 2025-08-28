@@ -22,10 +22,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Lightbulb } from 'lucide-react';
 
 
 export default function LoginPage() {
-  const { setRole } = useContext(AuthContext);
+  const { setRole, hasAccount, createAccount } = useContext(AuthContext);
   const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -36,7 +38,7 @@ export default function LoginPage() {
   };
 
   const handleCreateAccount = (role: UserRole) => {
-    setRole(role);
+    createAccount(role);
     setOpen(false);
     router.push('/dashboard');
   };
@@ -76,14 +78,23 @@ export default function LoginPage() {
           <CardDescription>{t('login_select_role')}</CardDescription>
         </CardHeader>
         <CardContent>
+          {!hasAccount && (
+             <Alert className="mb-4">
+                <Lightbulb className="h-4 w-4" />
+                <AlertTitle>{t('no_account_alert_title')}</AlertTitle>
+                <AlertDescription>
+                  {t('no_account_alert_desc')}
+                </AlertDescription>
+            </Alert>
+          )}
           <div className="grid gap-4">
-            <Button onClick={() => handleLogin('customer')} className="w-full">
+            <Button onClick={() => handleLogin('customer')} className="w-full" disabled={!hasAccount}>
               {t('sign_in_as')} {t('role_customer')}
             </Button>
-            <Button onClick={() => handleLogin('employee')} variant="secondary" className="w-full">
+            <Button onClick={() => handleLogin('employee')} variant="secondary" className="w-full" disabled={!hasAccount}>
                {t('sign_in_as')} {t('role_employee')}
             </Button>
-            <Button onClick={() => handleLogin('admin')} variant="outline" className="w-full">
+            <Button onClick={() => handleLogin('admin')} variant="outline" className="w-full" disabled={!hasAccount}>
                {t('sign_in_as')} {t('role_admin')}
             </Button>
           </div>

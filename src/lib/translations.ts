@@ -16,6 +16,8 @@ export const translations = {
     create_account_title: "Create a New Account",
     create_account_desc: "Choose the type of account you'd like to create. This will redirect you to the appropriate dashboard.",
     create_account_as: 'Create account as',
+    no_account_alert_title: 'No Account Found',
+    no_account_alert_desc: 'Please create an account to sign in.',
 
     nav_dashboard: 'Dashboard',
     nav_products: 'Products',
@@ -124,6 +126,8 @@ export const translations = {
     create_account_title: 'Crear una Nueva Cuenta',
     create_account_desc: 'Elige el tipo de cuenta que te gustaría crear. Esto te redirigirá al panel apropiado.',
     create_account_as: 'Crear cuenta como',
+    no_account_alert_title: 'No se Encontró una Cuenta',
+    no_account_alert_desc: 'Por favor, crea una cuenta para iniciar sesión.',
 
     nav_dashboard: 'Panel',
     nav_products: 'Productos',
