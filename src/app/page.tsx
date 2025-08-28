@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthContext, UserRole } from '@/components/auth-provider';
-import { Croissant, UserPlus } from 'lucide-react';
+import { Croissant, Languages, Check } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
 import {
   Dialog,
@@ -14,12 +14,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+
 
 export default function LoginPage() {
   const { setRole } = useContext(AuthContext);
-  const { t } = useContext(LanguageContext);
+  const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -36,6 +43,26 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
+      <div className="absolute top-4 right-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Languages className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setLanguage('en')}>
+              <Check className={cn("mr-2 h-4 w-4", language !== 'en' && 'opacity-0')} />
+              <span>English</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('es')}>
+              <Check className={cn("mr-2 h-4 w-4", language !== 'es' && 'opacity-0')} />
+              <span>Español</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="flex items-center space-x-2 text-primary">
           <Croissant className="h-12 w-12" />
