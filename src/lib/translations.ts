@@ -1,3 +1,4 @@
+
 export const translations = {
   en: {
     app_subtitle: 'The finest baked goods, now in the cloud.',
@@ -5,7 +6,6 @@ export const translations = {
     login_enter_credentials: 'Enter your credentials to log in.',
     sign_in: 'Sign In',
     username: 'Username',
-    username_placeholder: 'your_username',
     password: 'Password',
     role_customer: 'Customer',
     role_employee: 'Employee',
@@ -14,7 +14,7 @@ export const translations = {
     profile: 'Profile',
     language: 'Language',
     no_account: "Don't have an account?",
-    create_account_button: "Create one now",
+    create_account_button: "Create Account",
     invalid_credentials: 'Invalid username or password.',
     login_failed: 'Login Failed',
 
@@ -133,7 +133,6 @@ export const translations = {
     login_enter_credentials: 'Ingresa tus credenciales para iniciar sesión.',
     sign_in: 'Iniciar Sesión',
     username: 'Usuario',
-    username_placeholder: 'tu_usuario',
     password: 'Contraseña',
     role_customer: 'Cliente',
     role_employee: 'Empleado',
@@ -142,7 +141,7 @@ export const translations = {
     profile: 'Perfil',
     language: 'Idioma',
     no_account: '¿No tienes una cuenta?',
-    create_account_button: 'Crea una ahora',
+    create_account_button: 'Crear Cuenta',
     invalid_credentials: 'Usuario o contraseña no válidos.',
     login_failed: 'Inicio de Sesión Fallido',
     
