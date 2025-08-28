@@ -2,27 +2,27 @@
 'use client';
 
 import { Suspense, useContext, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthContext, UserRole } from '@/components/auth-provider';
-import { Croissant, Languages, Check, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 
 function SignupForm() {
     const { signup } = useContext(AuthContext);
     const { t } = useContext(LanguageContext);
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { toast } = useToast();
 
-    const role = (searchParams.get('role') as UserRole) || 'customer';
-
+    const [role, setRole] = useState<UserRole | ''>('');
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -41,6 +41,10 @@ function SignupForm() {
 
     const handleSignup = async () => {
         setError('');
+        if (!role) {
+            setError(t('role_is_required'));
+            return;
+        }
         if (password !== confirmPassword) {
             setError(t('passwords_do_not_match'));
             return;
@@ -94,6 +98,19 @@ function SignupForm() {
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     )}
+                    <div className="grid gap-2">
+                        <Label htmlFor="role">{t('role_type')}</Label>
+                        <Select onValueChange={(value) => setRole(value as UserRole)} value={role}>
+                            <SelectTrigger id="role">
+                                <SelectValue placeholder={t('select_role_placeholder')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="customer">{t('role_customer')}</SelectItem>
+                                <SelectItem value="employee">{t('role_employee')}</SelectItem>
+                                <SelectItem value="admin">{t('role_admin')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="grid gap-2">
                         <Label htmlFor="fullName">{t('full_name')}</Label>
                         <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required />

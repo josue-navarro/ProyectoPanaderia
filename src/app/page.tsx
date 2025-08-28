@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthContext } from '@/components/auth-provider';
-import { Croissant, Languages, Check, Lightbulb } from 'lucide-react';
+import { Croissant, Languages, Check } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,18 +37,19 @@ export default function LoginPage() {
       if (success) {
         router.push('/dashboard');
       } else {
-        setError('Invalid username or password.');
+        const errorMessage = t('invalid_credentials');
+        setError(errorMessage);
          toast({
           variant: "destructive",
-          title: "Error",
-          description: "Invalid username or password.",
+          title: t('login_failed'),
+          description: errorMessage,
         })
       }
     } catch (err: any) {
       setError(err.message);
        toast({
           variant: "destructive",
-          title: "Login Failed",
+          title: t('login_failed'),
           description: err.message,
         })
     }
@@ -106,6 +107,7 @@ export default function LoginPage() {
               required 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
           <div className="grid gap-2">
@@ -117,6 +119,7 @@ export default function LoginPage() {
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
            <Button onClick={handleLogin} className="w-full">
@@ -125,14 +128,9 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col items-center">
           <p className="text-xs text-muted-foreground">{t('no_account')}</p>
-          <div className="flex gap-2">
-            <Button asChild variant="link" size="sm">
-                <Link href="/signup?role=customer">{t('create_customer_account')}</Link>
-            </Button>
-             <Button asChild variant="link" size="sm">
-                <Link href="/signup?role=employee">{t('create_employee_account')}</Link>
-            </Button>
-          </div>
+          <Button asChild variant="link" size="sm">
+              <Link href="/signup">{t('create_account_button')}</Link>
+          </Button>
         </CardFooter>
       </Card>
     </main>
