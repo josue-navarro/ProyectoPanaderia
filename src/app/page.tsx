@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,21 +35,18 @@ export default function LoginPage() {
   const usernameInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = async () => {
+    // Reset errors
     setError('');
-    setValidationErrors({ username: false, password: false });
-
     const newValidationErrors = {
       username: !username,
       password: !password,
     };
+    setValidationErrors(newValidationErrors);
 
+    // If there are validation errors, stop here.
     if (newValidationErrors.username || newValidationErrors.password) {
-      setValidationErrors(newValidationErrors);
-      setError(t('fields_are_required'));
-      setIsErrorDialogOpen(true);
       return;
     }
-
 
     try {
       const success = await login(username, password);
@@ -69,10 +66,12 @@ export default function LoginPage() {
       usernameInputRef.current?.focus();
     }
   };
-
+  
   const closeErrorDialog = () => {
     setIsErrorDialogOpen(false);
   }
+
+  const isFormInvalid = !username || !password;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -136,7 +135,7 @@ export default function LoginPage() {
               type="text" 
               required 
               value={username}
-              className={cn(validationErrors.username && "border-destructive")}
+              className={cn(validationErrors.username && "border-destructive focus-visible:ring-destructive")}
               onChange={(e) => {
                 setUsername(e.target.value);
                 if (validationErrors.username) setValidationErrors(p => ({...p, username: false}));
@@ -155,7 +154,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"} 
                 required 
                 value={password}
-                className={cn(validationErrors.password && "border-destructive")}
+                className={cn(validationErrors.password && "border-destructive focus-visible:ring-destructive")}
                 onChange={(e) => {
                   setPassword(e.target.value)
                   if (validationErrors.password) setValidationErrors(p => ({...p, password: false}));
@@ -173,7 +172,7 @@ export default function LoginPage() {
               </Button>
             </div>
           </div>
-           <Button onClick={handleLogin} className="w-full">
+           <Button onClick={handleLogin} className="w-full" disabled={isFormInvalid}>
               {t('sign_in')}
             </Button>
         </CardContent>
