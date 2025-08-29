@@ -13,7 +13,7 @@ export const translations = {
     profile: 'Profile',
     language: 'Language',
     no_account: "Don't have an account?",
-    create_account_button: 'Create',
+    create_account_button: 'Create one',
     invalid_credentials: 'Invalid username or password.',
     login_error_title: 'Login Error',
     fields_are_required: 'Username and password are required.',
@@ -149,7 +149,7 @@ export const translations = {
     profile: 'Perfil',
     language: 'Idioma',
     no_account: '¿No tienes una cuenta?',
-    create_account_button: 'Crear',
+    create_account_button: 'Crea una',
     invalid_credentials: 'Usuario o contraseña inválidos.',
     login_error_title: 'Error de Inicio de Sesión',
     fields_are_required: 'El usuario y la contraseña son obligatorios.',
@@ -284,7 +284,7 @@ export const translations = {
     profile: '个人资料',
     language: '语言',
     no_account: '没有帐户？',
-    create_account_button: '创建',
+    create_account_button: '创建一个',
     invalid_credentials: '用户名或密码无效。',
     login_error_title: '登录错误',
     fields_are_required: '需要用户名和密码。',
@@ -411,7 +411,7 @@ export const translations = {
     profile: 'プロフィール',
     language: '言語',
     no_account: 'アカウントをお持ちではありませんか？',
-    create_account_button: '作成',
+    create_account_button: '作成する',
     invalid_credentials: 'ユーザー名またはパスワードが無効です。',
     login_error_title: 'ログインエラー',
     fields_are_required: 'ユーザー名とパスワードが必要です。',
@@ -527,4 +527,3 @@ export const translations = {
 };
 
 export type TranslationKey = keyof typeof translations.en;
-

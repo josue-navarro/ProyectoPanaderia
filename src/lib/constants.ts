@@ -1,4 +1,4 @@
-import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText, Languages } from 'lucide-react';
+import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText } from 'lucide-react';
 import type { UserRole } from '@/components/auth-provider';
 import type { TranslationKey } from './translations';
 
