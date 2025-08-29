@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,10 +31,26 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({ username: false, password: false });
   const usernameInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = async () => {
     setError('');
+    setValidationErrors({ username: false, password: false });
+
+    const newValidationErrors = {
+      username: !username,
+      password: !password,
+    };
+
+    if (newValidationErrors.username || newValidationErrors.password) {
+      setValidationErrors(newValidationErrors);
+      setError(t('fields_are_required'));
+      setIsErrorDialogOpen(true);
+      return;
+    }
+
+
     try {
       const success = await login(username, password);
       if (success) {
@@ -56,8 +72,6 @@ export default function LoginPage() {
 
   const closeErrorDialog = () => {
     setIsErrorDialogOpen(false);
-    // Give focus back to username input after closing dialog
-    setTimeout(() => usernameInputRef.current?.focus(), 0);
   }
 
   return (
@@ -112,26 +126,40 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="username">{t('username')}</Label>
+            <Label htmlFor="username" className={cn(validationErrors.username && "text-destructive")}>
+              {t('username')}
+              {validationErrors.username && <span className="text-destructive ml-1">*</span>}
+            </Label>
             <Input 
               id="username" 
               ref={usernameInputRef}
               type="text" 
               required 
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className={cn(validationErrors.username && "border-destructive")}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (validationErrors.username) setValidationErrors(p => ({...p, username: false}));
+              }}
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">{t('password')}</Label>
+            <Label htmlFor="password" className={cn(validationErrors.password && "text-destructive")}>
+              {t('password')}
+              {validationErrors.password && <span className="text-destructive ml-1">*</span>}
+            </Label>
             <div className="relative">
               <Input 
                 id="password" 
                 type={showPassword ? "text" : "password"} 
                 required 
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className={cn(validationErrors.password && "border-destructive")}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (validationErrors.password) setValidationErrors(p => ({...p, password: false}));
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
               />
               <Button
