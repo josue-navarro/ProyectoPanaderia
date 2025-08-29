@@ -18,6 +18,7 @@ import { AuthContext } from '@/components/auth-provider';
 import { LanguageContext } from '@/components/language-provider';
 import { Croissant, LogOut } from 'lucide-react';
 import React from 'react';
+import Link from 'next/link';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useContext(AuthContext);
@@ -42,12 +43,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2" data-testid="sidebar-header">
+          <Link href="/dashboard" className="flex items-center gap-2" data-testid="sidebar-header">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Croissant className="h-5 w-5" />
             </div>
             <span className="text-lg font-headline font-semibold">Panadería Cloud</span>
-          </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <MainNav />
