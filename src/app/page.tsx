@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthContext } from '@/components/auth-provider';
 import { Croissant, Languages, Check, Eye, EyeOff, AlertTriangle } from 'lucide-react';
-import { LanguageContext } from '@/components/language-provider';
+import { LanguageContext, supportedLanguages } from '@/components/language-provider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { login } = useContext(AuthContext);
@@ -72,14 +72,12 @@ export default function LoginPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setLanguage('en')}>
-              <Check className={cn("mr-2 h-4 w-4", language !== 'en' && 'opacity-0')} />
-              <span>English</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage('es')}>
-              <Check className={cn("mr-2 h-4 w-4", language !== 'es' && 'opacity-0')} />
-              <span>Español</span>
-            </DropdownMenuItem>
+            {supportedLanguages.map(lang => (
+              <DropdownMenuItem key={lang.code} onClick={() => setLanguage(lang.code)}>
+                <Check className={cn("mr-2 h-4 w-4", language !== lang.code && 'opacity-0')} />
+                <span>{lang.name}</span>
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

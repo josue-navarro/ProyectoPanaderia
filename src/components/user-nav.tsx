@@ -17,7 +17,7 @@ import {
   DropdownMenuPortal
 } from '@/components/ui/dropdown-menu';
 import { AuthContext } from './auth-provider';
-import { LanguageContext } from './language-provider';
+import { LanguageContext, supportedLanguages } from './language-provider';
 import { LogOut, User, Languages, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -69,14 +69,12 @@ export function UserNav() {
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => setLanguage('en')}>
-                       <Check className={cn("mr-2 h-4 w-4", language !== 'en' && 'opacity-0')} />
-                        <span>English</span>
+                  {supportedLanguages.map(lang => (
+                    <DropdownMenuItem key={lang.code} onClick={() => setLanguage(lang.code)}>
+                      <Check className={cn("mr-2 h-4 w-4", language !== lang.code && 'opacity-0')} />
+                      <span>{lang.name}</span>
                     </DropdownMenuItem>
-                     <DropdownMenuItem onClick={() => setLanguage('es')}>
-                        <Check className={cn("mr-2 h-4 w-4", language !== 'es' && 'opacity-0')} />
-                        <span>Español</span>
-                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
