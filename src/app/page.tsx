@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useContext, useState } from 'react';
@@ -16,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
@@ -92,13 +92,6 @@ export default function LoginPage() {
           <CardDescription>{t('login_enter_credentials')}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-           {error && (
-             <Alert variant="destructive">
-                <AlertDescription>
-                  {error}
-                </AlertDescription>
-            </Alert>
-          )}
           <div className="grid gap-2">
             <Label htmlFor="username">{t('username')}</Label>
             <Input 
