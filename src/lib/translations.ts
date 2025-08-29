@@ -16,7 +16,6 @@ export const translations = {
     no_account: "Don't have an account?",
     create_account_button: "Create",
     invalid_credentials: 'Invalid username or password.',
-    login_failed: 'Login Failed',
 
     signup_title: 'Create Your Account',
     signup_desc: 'Fill out the form below to get started.',
@@ -143,7 +142,6 @@ export const translations = {
     no_account: '¿No tienes una cuenta?',
     create_account_button: 'Crear',
     invalid_credentials: 'Usuario o contraseña no válidos.',
-    login_failed: 'Inicio de Sesión Fallido',
     
     signup_title: 'Crea Tu Cuenta',
     signup_desc: 'Completa el siguiente formulario para comenzar.',

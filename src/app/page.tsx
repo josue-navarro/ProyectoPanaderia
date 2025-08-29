@@ -101,7 +101,6 @@ export default function LoginPage() {
           {error && (
              <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('login_failed')}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
