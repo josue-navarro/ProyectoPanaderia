@@ -40,6 +40,9 @@ export function UserNav() {
 
   return (
     <div className="flex items-center gap-2">
+        <span className="hidden md:inline font-medium text-sm text-foreground/80">
+            {user.username}
+        </span>
         <DropdownMenu>
         <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
@@ -97,9 +100,6 @@ export function UserNav() {
             </DropdownMenuItem>
         </DropdownMenuContent>
         </DropdownMenu>
-         <span className="hidden md:inline font-medium text-sm text-foreground/80">
-            {user.username}
-        </span>
     </div>
   );
 }
