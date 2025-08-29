@@ -99,9 +99,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="grid gap-4">
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <p className="text-sm font-medium text-destructive">{error}</p>
           )}
           <div className="grid gap-2">
             <Label htmlFor="username">{t('username')}</Label>
