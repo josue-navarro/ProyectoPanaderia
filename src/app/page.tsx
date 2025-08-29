@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,12 +25,12 @@ export default function LoginPage() {
   const { login } = useContext(AuthContext);
   const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
-  const { toast } = useToast();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const usernameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (error) {
@@ -52,11 +52,13 @@ export default function LoginPage() {
         setError(errorMessage);
         setUsername('');
         setPassword('');
+        usernameInputRef.current?.focus();
       }
     } catch (err: any) {
       setError(err.message);
       setUsername('');
       setPassword('');
+      usernameInputRef.current?.focus();
     }
   };
 
@@ -105,6 +107,7 @@ export default function LoginPage() {
             <Label htmlFor="username">{t('username')}</Label>
             <Input 
               id="username" 
+              ref={usernameInputRef}
               type="text" 
               required 
               value={username}
