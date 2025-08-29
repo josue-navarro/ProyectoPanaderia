@@ -4,11 +4,11 @@ import React, { useState, useTransition, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { translateText, TranslateTextOutput } from '@/ai/flows/translate';
-import { Loader2, Languages, Clipboard, Check } from 'lucide-react';
+import { Loader2, Languages, Clipboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageContext, supportedLanguages } from '@/components/language-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { translateText, TranslateTextOutput } from '@/ai/flows/local-translate';
 
 export default function TranslatePage() {
   const { t } = useContext(LanguageContext);
@@ -67,7 +67,7 @@ export default function TranslatePage() {
                     <SelectValue placeholder={t('select_target_language')} />
                 </SelectTrigger>
                 <SelectContent>
-                    {supportedLanguages.filter(l => l.code !== 'en').map(lang => (
+                    {supportedLanguages.map(lang => (
                         <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
                     ))}
                 </SelectContent>
@@ -88,7 +88,7 @@ export default function TranslatePage() {
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="font-headline">{t('translation_placeholder')}</CardTitle>
-            <CardDescription>{t('translation_desc_spanish')}</CardDescription>
+            <CardDescription>{t('translation_desc')}</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <div className="relative flex-grow">

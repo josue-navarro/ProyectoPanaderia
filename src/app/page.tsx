@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
@@ -36,7 +35,7 @@ export default function LoginPage() {
     if (error) {
       const timer = setTimeout(() => {
         setError('');
-      }, 5000); // Oculta el error después de 5 segundos
+      }, 5000); 
       return () => clearTimeout(timer);
     }
   }, [error]);
