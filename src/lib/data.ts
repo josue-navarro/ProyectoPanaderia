@@ -10,6 +10,30 @@ export const users: User[] = [
         username: 'admin',
         password: 'Password1',
         role: 'admin',
+    },
+    {
+        id: 'user_adm_josue',
+        fullName: 'Josue Admin',
+        email: 'adm.josue@panaderia.cloud',
+        username: 'ADMJosue',
+        password: 'Josue123',
+        role: 'admin',
+    },
+    {
+        id: 'user_emp_josue',
+        fullName: 'Josue Employee',
+        email: 'emp.josue@panaderia.cloud',
+        username: 'EmpleadoJosue',
+        password: 'Josue123',
+        role: 'employee',
+    },
+    {
+        id: 'user_cli_josue',
+        fullName: 'Josue Customer',
+        email: 'cli.josue@panaderia.cloud',
+        username: 'ClienteJsue',
+        password: 'Josue123',
+        role: 'customer',
     }
 ];
 
