@@ -37,7 +37,6 @@ export const translations = {
     role_is_required: 'Please select an account type.',
 
     nav_dashboard: 'Dashboard',
-    nav_analytics: 'Analytics',
     nav_products: 'Products',
     nav_my_orders: 'My Orders',
     nav_for_you: 'For You',
@@ -174,7 +173,6 @@ export const translations = {
     role_is_required: 'Por favor selecciona un tipo de cuenta.',
 
     nav_dashboard: 'Bienvenida',
-    nav_analytics: 'Panel',
     nav_products: 'Productos',
     nav_my_orders: 'Mis Pedidos',
     nav_for_you: 'Para Ti',
@@ -309,7 +307,6 @@ export const translations = {
     select_role_placeholder: '选择一个帐户类型',
     role_is_required: '请选择一个帐户类型。',
     nav_dashboard: '欢迎',
-    nav_analytics: '分析',
     nav_products: '产品',
     nav_my_orders: '我的订单',
     nav_for_you: '为您推荐',
@@ -437,7 +434,6 @@ export const translations = {
     select_role_placeholder: 'アカウントタイプを選択してください',
     role_is_required: 'アカウントタイプを選択してください。',
     nav_dashboard: 'ようこそ',
-    nav_analytics: 'アナリティクス',
     nav_products: '製品',
     nav_my_orders: '私の注文',
     nav_for_you: 'あなたへのおすすめ',
