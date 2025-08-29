@@ -18,7 +18,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 export default function LoginPage() {
   const { login } = useContext(AuthContext);
@@ -29,16 +30,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
   const usernameInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 5000); 
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   const handleLogin = async () => {
     setError('');
@@ -49,20 +42,43 @@ export default function LoginPage() {
       } else {
         const errorMessage = t('invalid_credentials');
         setError(errorMessage);
-        setUsername('');
+        setIsErrorDialogOpen(true);
         setPassword('');
         usernameInputRef.current?.focus();
       }
     } catch (err: any) {
       setError(err.message);
-      setUsername('');
+      setIsErrorDialogOpen(true);
       setPassword('');
       usernameInputRef.current?.focus();
     }
   };
 
+  const closeErrorDialog = () => {
+    setIsErrorDialogOpen(false);
+    // Give focus back to username input after closing dialog
+    setTimeout(() => usernameInputRef.current?.focus(), 0);
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
+      <AlertDialog open={isErrorDialogOpen} onOpenChange={setIsErrorDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="text-destructive" />
+              {t('login_error_title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {error}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={closeErrorDialog}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="absolute top-4 right-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -95,12 +111,6 @@ export default function LoginPage() {
           <CardDescription>{t('login_enter_credentials')}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          {error && (
-             <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
           <div className="grid gap-2">
             <Label htmlFor="username">{t('username')}</Label>
             <Input 
