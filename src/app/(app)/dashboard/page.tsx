@@ -23,7 +23,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_browse_products_title')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('nav_products')}</CardTitle>
             <Croissant className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_your_orders_title')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('nav_my_orders')}</CardTitle>
             <ListOrdered className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -49,7 +49,7 @@ export default function DashboardPage() {
         </Card>
         <Card className="bg-accent text-accent-foreground">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_ai_recs_title')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('nav_for_you')}</CardTitle>
             <Sparkles className="h-4 w-4 text-accent-foreground/70" />
           </CardHeader>
           <CardContent>
