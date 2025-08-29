@@ -3,10 +3,12 @@
 import React, { createContext, useState, ReactNode, useMemo, useCallback } from 'react';
 import { translations, TranslationKey } from '@/lib/translations';
 
-export type Language = 'en' | 'es';
+export type Language = 'en' | 'es' | 'zh' | 'ja';
 export const supportedLanguages: { code: Language; name: string }[] = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Español' },
+    { code: 'zh', name: '中文 (Chinese)' },
+    { code: 'ja', name: '日本語 (Japanese)' },
 ];
 
 interface LanguageContextType {
@@ -16,7 +18,7 @@ interface LanguageContextType {
 }
 
 export const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
+  language: 'es',
   setLanguage: () => {},
   t: (key: TranslationKey) => key,
 });
@@ -28,6 +30,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     let text = translations[language][key] || translations.en[key];
     
     if (!text) {
+        console.warn(`Translation key '${key}' not found for language '${language}'.`);
         text = key; // Fallback to key if no translation found
     }
 
