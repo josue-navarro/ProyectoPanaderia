@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { login } = useContext(AuthContext);
@@ -31,6 +32,15 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError('');
+      }, 5000); // Oculta el error después de 5 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleLogin = async () => {
     setError('');
     try {
@@ -40,19 +50,13 @@ export default function LoginPage() {
       } else {
         const errorMessage = t('invalid_credentials');
         setError(errorMessage);
-         toast({
-          variant: "destructive",
-          title: t('login_failed'),
-          description: errorMessage,
-        })
+        setUsername('');
+        setPassword('');
       }
     } catch (err: any) {
       setError(err.message);
-       toast({
-          variant: "destructive",
-          title: t('login_failed'),
-          description: err.message,
-        })
+      setUsername('');
+      setPassword('');
     }
   };
 
@@ -92,6 +96,11 @@ export default function LoginPage() {
           <CardDescription>{t('login_enter_credentials')}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="username">{t('username')}</Label>
             <Input 
