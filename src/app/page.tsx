@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthContext } from '@/components/auth-provider';
-import { Croissant, Languages, Check, Eye, EyeOff } from 'lucide-react';
+import { Croissant, Languages, Check, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
 import {
   DropdownMenu,
@@ -19,7 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const { login } = useContext(AuthContext);
@@ -100,6 +100,8 @@ export default function LoginPage() {
         <CardContent className="grid gap-4">
           {error && (
              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{t('login_failed')}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
