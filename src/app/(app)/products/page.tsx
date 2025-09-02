@@ -152,11 +152,11 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
             />
           )}
         </div>
-        {!isEditing && product.isAvailable && product.stock < 10 && (
+        {!isEditing && product.isAvailable && product.stock > 0 && product.stock < 10 && (
           <Badge className="absolute top-2 left-2">Pocas unidades</Badge>
         )}
         {!isEditing && !product.isAvailable && (
-          <Badge variant="destructive" className="absolute top-2 right-2">{t('sold_out')}</Badge>
+          <Badge variant="destructive" className="absolute top-2 left-2">{t('sold_out')}</Badge>
         )}
       </CardHeader>
       <CardContent className="flex-grow p-4">
