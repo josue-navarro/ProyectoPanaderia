@@ -9,7 +9,7 @@ import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Plus } from 'lucide-react';
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
 import { Input } from '@/components/ui/input';
@@ -29,6 +29,11 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // This effect ensures that if the product prop changes from the parent,
+  // the local state for editing is also updated. This fixes the bug.
+  useEffect(() => {
+    setEditedProduct(product);
+  }, [product]);
 
   const handleAddToCart = () => {
     toast({
@@ -75,8 +80,11 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -90,7 +98,7 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
         >
           {isEditing ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-2">
-              {imagePreview || editedProduct.imageUrl ? (
+              {(imagePreview || editedProduct.imageUrl) ? (
                 <Image
                   src={imagePreview || editedProduct.imageUrl}
                   alt="Vista previa del producto"
