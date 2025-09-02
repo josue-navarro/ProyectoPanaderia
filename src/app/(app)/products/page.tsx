@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -16,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; onSaveNewProduct: (newProduct: Product, oldId: string) => void; }) {
@@ -89,6 +91,20 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleStatusChange = (status: string) => {
+    setEditedProduct(prev => ({
+      ...prev,
+      isAvailable: status !== 'sold_out',
+      stock: status === 'low_stock' ? 5 : (status === 'sold_out' ? 0 : 100),
+    }));
+  };
+
+  const getCurrentStatus = () => {
+    if (!editedProduct.isAvailable) return 'sold_out';
+    if (editedProduct.stock < 10) return 'low_stock';
+    return 'available';
   };
 
 
@@ -184,6 +200,21 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
                 onChange={handleInputChange}
                 rows={3}
             />
+             <Label className="text-xs text-muted-foreground">Estado</Label>
+             <RadioGroup value={getCurrentStatus()} onValueChange={handleStatusChange} className="flex space-x-4 pt-1">
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="available" id={`available-${product.id}`} />
+                    <Label htmlFor={`available-${product.id}`} className="font-normal">Disponible</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="low_stock" id={`low_stock-${product.id}`} />
+                    <Label htmlFor={`low_stock-${product.id}`} className="font-normal">Pocas unidades</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="sold_out" id={`sold_out-${product.id}`} />
+                    <Label htmlFor={`sold_out-${product.id}`} className="font-normal">Agotado</Label>
+                </div>
+            </RadioGroup>
           </div>
         ) : (
             <CardDescription className="mt-2">{product.description}</CardDescription>
@@ -263,7 +294,7 @@ export default function ProductsPage() {
       imageUrl: '',
       category: 'Pastries',
       isAvailable: true,
-      stock: 0,
+      stock: 100,
     };
     setProducts(prev => [...prev, newProduct]);
   };

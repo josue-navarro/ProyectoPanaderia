@@ -37,18 +37,7 @@ export const users: User[] = [
     }
 ];
 
-export const products: Product[] = [
-  {
-    id: 'prod_001',
-    name: 'Sourdough Loaf',
-    description: 'Classic tangy sourdough with a chewy crumb and crusty exterior.',
-    price: 7.5,
-    imageUrl: 'https://picsum.photos/600/400',
-    category: 'Bread',
-    isAvailable: true,
-    stock: 25,
-  },
-];
+export const products: Product[] = [];
 
 export const stores: Store[] = [
   {
