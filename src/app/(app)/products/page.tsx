@@ -84,14 +84,14 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
             onClick={handleImageClick}
         >
           {isEditing ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-2">
               {imagePreview || editedProduct.imageUrl ? (
                 <Image
                   src={imagePreview || editedProduct.imageUrl}
                   alt="Vista previa del producto"
                   width={400}
                   height={300}
-                  className="object-cover w-full h-full rounded-t-lg"
+                  className="object-contain w-full h-full rounded-t-lg"
                   unoptimized // Allows blob URLs and external URLs
                 />
               ) : (
