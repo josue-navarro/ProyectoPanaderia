@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useContext } from 'react';
@@ -8,6 +9,7 @@ import { AuthContext } from '@/components/auth-provider';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ListOrdered } from 'lucide-react';
 import { LanguageContext } from '@/components/language-provider';
+import { orders } from '@/lib/data';
 
 function CustomerDashboard() {
   const { user } = useContext(AuthContext);
@@ -24,7 +26,7 @@ function CustomerDashboard() {
 
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="flex flex-col">
-              <Image src="/images/figura2.jpg" alt="Freshly baked bread" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="baked bread"/>
+              <Image src="https://picsum.photos/600/400" alt="Freshly baked bread" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="baked bread"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_products')}</CardTitle>
               <CardDescription>{t('dashboard_browse_products_desc')}</CardDescription>
@@ -36,7 +38,7 @@ function CustomerDashboard() {
             </CardFooter>
           </Card>
           <Card className="flex flex-col">
-             <Image src="/images/figura1.jpg" alt="A person tracking an order on a map" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="tracking order"/>
+             <Image src="https://picsum.photos/600/400" alt="A person tracking an order on a map" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="tracking order"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_my_orders')}</CardTitle>
               <CardDescription>{t('dashboard_your_orders_desc')}</CardDescription>
@@ -48,7 +50,7 @@ function CustomerDashboard() {
             </CardFooter>
           </Card>
           <Card className="flex flex-col bg-accent text-accent-foreground">
-             <Image src="/images/figura3.jpg" alt="Abstract representation of AI" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="artificial intelligence"/>
+             <Image src="https://picsum.photos/600/400" alt="Abstract representation of AI" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="artificial intelligence"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_for_you')}</CardTitle>
               <CardDescription className="text-accent-foreground/80">{t('dashboard_ai_recs_desc')}</CardDescription>
@@ -67,6 +69,8 @@ function CustomerDashboard() {
 
 function StaffDashboard() {
   const { t } = useContext(LanguageContext);
+  const activeOrders = orders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled').length;
+
   return (
      <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between space-y-2">
@@ -87,8 +91,13 @@ function StaffDashboard() {
             <ListOrdered className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{activeOrders}</div>
             <p className="text-xs text-muted-foreground">{t('dashboard_active_orders_desc')}</p>
+             <Button size="sm" variant="outline" className="mt-2" asChild>
+                <Link href="/orders">
+                  {t('view_orders')} <ArrowRight className="ml-2 h-3 w-3" />
+                </Link>
+            </Button>
           </CardContent>
         </Card>
      </div>
