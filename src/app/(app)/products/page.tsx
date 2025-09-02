@@ -182,16 +182,6 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
                     className="text-lg font-bold text-primary w-24 h-9"
                 />
             </div>
-          </div>
-        ) : (
-          <div className="flex justify-between items-start">
-            <CardTitle className="font-headline text-xl mb-1">{product.name}</CardTitle>
-            <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
-          </div>
-        )}
-
-        {isEditing ? (
-          <div className="space-y-2 mt-2">
             <Label htmlFor="description" className="text-xs text-muted-foreground">Descripción</Label>
             <Textarea
                 id="description"
@@ -217,7 +207,13 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
             </RadioGroup>
           </div>
         ) : (
+          <div>
+            <div className="flex justify-between items-start">
+                <CardTitle className="font-headline text-xl mb-1">{product.name}</CardTitle>
+                <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
+            </div>
             <CardDescription className="mt-2">{product.description}</CardDescription>
+          </div>
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
