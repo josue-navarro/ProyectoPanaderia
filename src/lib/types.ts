@@ -8,6 +8,7 @@ export interface User {
   username: string;
   password?: string; // In a real app, this would be a hash
   role: UserRole;
+  address?: string;
 }
 
 export interface Product {
@@ -42,4 +43,6 @@ export interface Order {
   total: number;
   status: OrderStatus;
   orderDate: string;
+  deliveryAddress: string;
+  paymentMethod: string;
 }

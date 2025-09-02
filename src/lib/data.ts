@@ -9,6 +9,7 @@ export const users: User[] = [
         username: 'admin',
         password: 'Password1',
         role: 'admin',
+        address: '123 Admin Way, Suite 100, San Francisco, CA 94102',
     },
     {
         id: 'user_adm_josue',
@@ -17,6 +18,7 @@ export const users: User[] = [
         username: 'ADMJosue',
         password: 'Josue123',
         role: 'admin',
+        address: '456 Admin Blvd, San Francisco, CA 94103',
     },
     {
         id: 'user_emp_josue',
@@ -33,6 +35,34 @@ export const users: User[] = [
         username: 'ClienteJosue',
         password: 'Josue123',
         role: 'customer',
+        address: '789 Customer St, Oakland, CA 94607',
+    },
+     {
+        id: 'user_cli_jane',
+        fullName: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        username: 'janedoe',
+        password: 'Password1',
+        role: 'customer',
+        address: '101 Customer Ave, Berkeley, CA 94704',
+    },
+    {
+        id: 'user_cli_john',
+        fullName: 'John Smith',
+        email: 'john.smith@example.com',
+        username: 'johnsmith',
+        password: 'Password1',
+        role: 'customer',
+        address: '202 Customer Pl, San Francisco, CA 94110',
+    },
+    {
+        id: 'user_cli_peter',
+        fullName: 'Peter Jones',
+        email: 'peter.jones@example.com',
+        username: 'peterjones',
+        password: 'Password1',
+        role: 'customer',
+        address: '303 Customer Ct, San Mateo, CA 94401',
     }
 ];
 
@@ -72,30 +102,37 @@ export const orders: Order[] = [
     id: '#86754',
     customerName: 'Jane Doe',
     items: [
-      { product: products[0], quantity: 1 },
+      { product: products[0] || { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 2 },
+      { product: products[1] || { id: 'p2', name: 'Sourdough', price: 8.0 } as any, quantity: 1 },
     ],
-    total: 7.5,
+    total: 15.0,
     status: 'Ready for Pickup',
-    orderDate: '2023-10-26'
+    orderDate: '2023-10-26',
+    deliveryAddress: users.find(u => u.username === 'janedoe')?.address || 'N/A',
+    paymentMethod: 'Credit Card (**** 1234)'
   },
   {
     id: '#86755',
     customerName: 'John Smith',
     items: [
-      { product: products[0], quantity: 1 },
+       { product: products[2] || { id: 'p3', name: 'Baguette', price: 4.0 } as any, quantity: 1 },
     ],
     total: 4.00,
     status: 'In Progress',
-    orderDate: '2023-10-27'
+    orderDate: '2023-10-27',
+    deliveryAddress: users.find(u => u.username === 'johnsmith')?.address || 'N/A',
+    paymentMethod: 'Apple Pay'
   },
   {
     id: '#86756',
     customerName: 'Peter Jones',
     items: [
-      { product: products[0], quantity: 4 },
+       { product: products[0] || { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 4 },
     ],
-    total: 30.00,
+    total: 14.00,
     status: 'Completed',
-    orderDate: '2023-10-25'
+    orderDate: '2023-10-25',
+    deliveryAddress: users.find(u => u.username === 'peterjones')?.address || 'N/A',
+    paymentMethod: 'Credit Card (**** 5678)'
   }
 ];

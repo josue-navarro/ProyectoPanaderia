@@ -8,14 +8,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { products, orders } from "@/lib/data";
 import { Check, Circle, CookingPot, MoreHorizontal, ShoppingCart, Truck, X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import type { OrderStatus } from "@/lib/types";
-import { useContext } from "react";
+import type { Order, OrderStatus } from "@/lib/types";
+import { useContext, useState } from "react";
 import { LanguageContext } from "@/components/language-provider";
 import { AuthContext } from "@/components/auth-provider";
+import { OrderDetails } from "@/components/order-details";
 
 const mockCart = [
   { ...products[0], quantity: 1 },
@@ -116,6 +118,7 @@ function CustomerOrders() {
 
 function StaffOrders() {
     const { t } = useContext(LanguageContext);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     const getStatusVariant = (status: OrderStatus) => {
         switch(status) {
@@ -134,53 +137,56 @@ function StaffOrders() {
                 <h1 className="text-3xl font-bold font-headline">{t('order_list_title')}</h1>
                 <p className="text-muted-foreground">{t('order_list_description')}</p>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>{t('all_orders_title')}</CardTitle>
-                    <CardDescription>{t('all_orders_description')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>{t('order_id')}</TableHead>
-                                <TableHead>{t('customer_name')}</TableHead>
-                                <TableHead>{t('order_date')}</TableHead>
-                                <TableHead className="text-right">{t('total')}</TableHead>
-                                <TableHead className="text-center">{t('status')}</TableHead>
-                                <TableHead><span className="sr-only">{t('actions')}</span></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {orders.map(order => (
-                                <TableRow key={order.id}>
-                                    <TableCell className="font-medium">{order.id}</TableCell>
-                                    <TableCell>{order.customerName}</TableCell>
-                                    <TableCell>{order.orderDate}</TableCell>
-                                    <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuItem>{t('view_details')}</DropdownMenuItem>
-                                                <DropdownMenuItem>{t('update_status')}</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive">{t('cancel_order')}</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
+             <Dialog>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('all_orders_title')}</CardTitle>
+                        <CardDescription>{t('all_orders_description')}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>{t('order_id')}</TableHead>
+                                    <TableHead>{t('customer_name')}</TableHead>
+                                    <TableHead>{t('order_date')}</TableHead>
+                                    <TableHead className="text-right">{t('total')}</TableHead>
+                                    <TableHead className="text-center">{t('status')}</TableHead>
+                                    <TableHead><span className="sr-only">{t('actions')}</span></TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                            </TableHeader>
+                            <TableBody>
+                                {orders.map(order => (
+                                    <TableRow key={order.id}>
+                                        <TableCell className="font-medium">{order.id}</TableCell>
+                                        <TableCell>{order.customerName}</TableCell>
+                                        <TableCell>{order.orderDate}</TableCell>
+                                        <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                                        <TableCell className="text-center">
+                                            <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>
+                                                    {t('view_details')}
+                                                </Button>
+                                            </DialogTrigger>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+                {selectedOrder && (
+                     <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                            <DialogTitle>{t('order_details_title')} {selectedOrder.id}</DialogTitle>
+                        </DialogHeader>
+                        <OrderDetails order={selectedOrder} />
+                    </DialogContent>
+                )}
+            </Dialog>
          </div>
     );
 }
