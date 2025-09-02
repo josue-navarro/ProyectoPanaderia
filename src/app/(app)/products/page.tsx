@@ -8,13 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Upload } from 'lucide-react';
+import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Plus } from 'lucide-react';
 import React, { useContext, useState, useRef } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+
 
 function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; }) {
   const { t } = useContext(LanguageContext);
@@ -22,7 +24,7 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   const { toast } = useToast();
   
   const [isAdded, setIsAdded] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(product.id.startsWith('new_'));
   const [editedProduct, setEditedProduct] = useState(product);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +49,14 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
     if (imagePreview) {
       finalProduct.imageUrl = imagePreview;
     }
+    if (finalProduct.id.startsWith('new_')) {
+      finalProduct.id = `prod_${Date.now()}`;
+    }
     onUpdateProduct(finalProduct);
     setIsEditing(false);
     setImagePreview(null);
     toast({
-      title: 'Producto Actualizado',
+      title: 'Producto Guardado',
       description: `${editedProduct.name} ha sido guardado.`,
     });
   };
@@ -205,15 +210,42 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   );
 }
 
+function AddProductCard({ onAdd }: { onAdd: () => void }) {
+  return (
+    <Card 
+      className="flex flex-col items-center justify-center aspect-[0.78] border-2 border-dashed bg-muted/50 hover:bg-muted/80 hover:border-primary transition-colors cursor-pointer"
+      onClick={onAdd}
+    >
+      <Plus className="h-16 w-16 text-muted-foreground" />
+      <p className="mt-2 font-medium text-muted-foreground">Añadir Nuevo Producto</p>
+    </Card>
+  )
+}
+
 
 export default function ProductsPage() {
   const { t } = useContext(LanguageContext);
+  const { user } = useContext(AuthContext);
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const handleUpdateProduct = (updatedProduct: Product) => {
     setProducts(prevProducts => 
       prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
     );
+  };
+  
+  const handleAddProduct = () => {
+    const newProduct: Product = {
+      id: `new_${Date.now()}`,
+      name: '',
+      description: '',
+      price: 0,
+      imageUrl: '',
+      category: 'Pastries',
+      isAvailable: true,
+      stock: 0,
+    };
+    setProducts(prev => [...prev, newProduct]);
   };
 
   return (
@@ -227,6 +259,7 @@ export default function ProductsPage() {
         {products.map((product) => (
           <ProductCard key={product.id} product={product} onUpdateProduct={handleUpdateProduct} />
         ))}
+        {user?.role === 'admin' && <AddProductCard onAdd={handleAddProduct} />}
       </div>
     </div>
   );
