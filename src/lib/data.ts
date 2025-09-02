@@ -31,7 +31,7 @@ export const users: User[] = [
         id: 'user_cli_josue',
         fullName: 'Josue Customer',
         email: 'cli.josue@panaderia.cloud',
-        username: 'ClienteJsue',
+        username: 'ClienteJosue',
         password: 'Josue123',
         role: 'customer',
     }
