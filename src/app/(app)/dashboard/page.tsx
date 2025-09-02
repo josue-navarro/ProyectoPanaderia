@@ -24,7 +24,7 @@ function CustomerDashboard() {
 
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="flex flex-col">
-              <Image src="https://picsum.photos/seed/bread/600/400" alt="Freshly baked bread" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="baked bread"/>
+              <Image src="/images/dashboard-products.jpg" alt="Freshly baked bread" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="baked bread"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_products')}</CardTitle>
               <CardDescription>{t('dashboard_browse_products_desc')}</CardDescription>
@@ -36,7 +36,7 @@ function CustomerDashboard() {
             </CardFooter>
           </Card>
           <Card className="flex flex-col">
-             <Image src="https://picsum.photos/seed/pastry/600/400" alt="A person tracking an order on a map" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="tracking order"/>
+             <Image src="/images/dashboard-orders.jpg" alt="A person tracking an order on a map" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="tracking order"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_my_orders')}</CardTitle>
               <CardDescription>{t('dashboard_your_orders_desc')}</CardDescription>
@@ -48,7 +48,7 @@ function CustomerDashboard() {
             </CardFooter>
           </Card>
           <Card className="flex flex-col bg-accent text-accent-foreground">
-             <Image src="https://picsum.photos/seed/ai/600/400" alt="Abstract representation of AI" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="artificial intelligence"/>
+             <Image src="/images/dashboard-recommendations.jpg" alt="Abstract representation of AI" width={600} height={400} className="rounded-t-lg object-cover aspect-[3/2]" data-ai-hint="artificial intelligence"/>
             <CardHeader>
               <CardTitle className="font-headline">{t('nav_for_you')}</CardTitle>
               <CardDescription className="text-accent-foreground/80">{t('dashboard_ai_recs_desc')}</CardDescription>
