@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 
-function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; }) {
+function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; onSaveNewProduct: (newProduct: Product, oldId: string) => void; }) {
   const { t } = useContext(LanguageContext);
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
@@ -29,8 +29,6 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // This effect ensures that if the product prop changes from the parent,
-  // the local state for editing is also updated. This fixes the bug.
   useEffect(() => {
     setEditedProduct(product);
   }, [product]);
@@ -54,10 +52,15 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
     if (imagePreview) {
       finalProduct.imageUrl = imagePreview;
     }
+    
     if (finalProduct.id.startsWith('new_')) {
+      const oldId = finalProduct.id;
       finalProduct.id = `prod_${Date.now()}`;
+      onSaveNewProduct(finalProduct, oldId);
+    } else {
+      onUpdateProduct(finalProduct);
     }
-    onUpdateProduct(finalProduct);
+
     setIsEditing(false);
     setImagePreview(null);
     toast({
@@ -245,6 +248,12 @@ export default function ProductsPage() {
     );
   };
   
+  const handleSaveNewProduct = (newProduct: Product, oldId: string) => {
+    setProducts(prevProducts => 
+      prevProducts.map(p => p.id === oldId ? newProduct : p)
+    );
+  }
+
   const handleAddProduct = () => {
     const newProduct: Product = {
       id: `new_${Date.now()}`,
@@ -268,7 +277,12 @@ export default function ProductsPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} onUpdateProduct={handleUpdateProduct} />
+          <ProductCard 
+            key={product.id} 
+            product={product} 
+            onUpdateProduct={handleUpdateProduct}
+            onSaveNewProduct={handleSaveNewProduct}
+          />
         ))}
         {user?.role === 'admin' && <AddProductCard onAdd={handleAddProduct} />}
       </div>
