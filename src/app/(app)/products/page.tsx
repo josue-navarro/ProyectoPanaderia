@@ -133,6 +133,9 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
             />
           )}
         </div>
+        {!isEditing && product.isAvailable && product.stock < 10 && (
+          <Badge className="absolute top-2 left-2">Pocas unidades</Badge>
+        )}
         {!isEditing && !product.isAvailable && (
           <Badge variant="destructive" className="absolute top-2 right-2">{t('sold_out')}</Badge>
         )}
