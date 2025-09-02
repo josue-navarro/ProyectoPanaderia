@@ -68,21 +68,32 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
         )}
       </CardHeader>
       <CardContent className="flex-grow p-4">
-        <div className="flex justify-between items-start">
-          <CardTitle className="font-headline text-xl mb-1">{product.name}</CardTitle>
-          {isEditing ? (
+         {isEditing ? (
+          <div className="space-y-2">
              <Input
-                type="number"
-                name="price"
-                value={editedProduct.price}
+                name="name"
+                value={editedProduct.name}
                 onChange={handleInputChange}
-                className="text-lg font-bold text-primary w-24"
-                prefix="$"
+                className="font-headline text-xl font-semibold h-9"
             />
-          ) : (
+            <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-primary">$</span>
+                <Input
+                    type="number"
+                    name="price"
+                    value={editedProduct.price}
+                    onChange={handleInputChange}
+                    className="text-lg font-bold text-primary w-24 h-9"
+                />
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-between items-start">
+            <CardTitle className="font-headline text-xl mb-1">{product.name}</CardTitle>
             <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
-          )}
-        </div>
+          </div>
+        )}
+
         {isEditing ? (
             <Textarea
                 name="description"
@@ -92,7 +103,7 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
                 rows={3}
             />
         ) : (
-            <CardDescription>{product.description}</CardDescription>
+            <CardDescription className="mt-2">{product.description}</CardDescription>
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
