@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Plus } from 'lucide-react';
+import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Plus, Trash2 } from 'lucide-react';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
@@ -18,9 +18,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
-function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; onSaveNewProduct: (newProduct: Product, oldId: string) => void; }) {
+function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; onSaveNewProduct: (newProduct: Product, oldId: string) => void; onDeleteProduct: (productId: string) => void; }) {
   const { t } = useContext(LanguageContext);
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
@@ -33,6 +44,11 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
 
   useEffect(() => {
     setEditedProduct(product);
+    // When a new product is added and it's time to edit it, reset the image preview
+    if (product.id.startsWith('new_')) {
+      setImagePreview(null);
+      setIsEditing(true);
+    }
   }, [product]);
 
   const handleAddToCart = () => {
@@ -57,6 +73,7 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
     
     if (finalProduct.id.startsWith('new_')) {
       const oldId = finalProduct.id;
+      // Note: This is a mock ID. In a real DB, this would be generated server-side.
       finalProduct.id = `prod_${Date.now()}`;
       onSaveNewProduct(finalProduct, oldId);
     } else {
@@ -142,7 +159,7 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
             </div>
           ) : (
             <Image
-              src={product.imageUrl}
+              src={product.imageUrl || 'https://picsum.photos/400/300'}
               alt={product.name}
               width={400}
               height={300}
@@ -224,9 +241,32 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct }: { product: 
                 <Save className="mr-2 h-4 w-4" /> Guardar
               </Button>
             ) : (
-              <Button className="w-full" variant="outline" onClick={handleEdit}>
-                <Pencil className="mr-2 h-4 w-4" /> Editar
-              </Button>
+                <>
+                <Button className="flex-1" variant="outline" onClick={handleEdit}>
+                    <Pencil className="mr-2 h-4 w-4" /> Editar
+                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button className="flex-1" variant="destructive">
+                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente el producto.
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDeleteProduct(product.id)}>
+                            Sí, eliminar
+                        </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                </>
             )}
           </div>
         ) : (
@@ -277,14 +317,14 @@ export default function ProductsPage() {
   
   const handleSaveNewProduct = (newProduct: Product, oldId: string) => {
     setProducts(prevProducts => 
-      prevProducts.map(p => p.id === oldId ? newProduct : p)
+        prevProducts.map(p => p.id === oldId ? newProduct : p)
     );
   }
 
   const handleAddProduct = () => {
     const newProduct: Product = {
       id: `new_${Date.now()}`,
-      name: '',
+      name: 'Nuevo Producto',
       description: '',
       price: 0,
       imageUrl: '',
@@ -293,6 +333,10 @@ export default function ProductsPage() {
       stock: 100,
     };
     setProducts(prev => [...prev, newProduct]);
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    setProducts(prev => prev.filter(p => p.id !== productId));
   };
 
   return (
@@ -309,6 +353,7 @@ export default function ProductsPage() {
             product={product} 
             onUpdateProduct={handleUpdateProduct}
             onSaveNewProduct={handleSaveNewProduct}
+            onDeleteProduct={handleDeleteProduct}
           />
         ))}
         {user?.role === 'admin' && <AddProductCard onAdd={handleAddProduct} />}
