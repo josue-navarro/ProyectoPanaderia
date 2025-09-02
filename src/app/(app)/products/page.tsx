@@ -8,12 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, CheckCircle, Pencil, Save } from 'lucide-react';
+import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus } from 'lucide-react';
 import React, { useContext, useState } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; }) {
   const { t } = useContext(LanguageContext);
@@ -55,31 +56,51 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   return (
     <Card className="flex flex-col">
       <CardHeader className="p-0 relative">
-        <Image
-          src={product.imageUrl}
-          alt={product.name}
-          width={400}
-          height={300}
-          className="object-cover rounded-t-lg aspect-[4/3]"
-          data-ai-hint="bakery product"
-        />
-        {!product.isAvailable && (
+        {isEditing ? (
+          <div className="p-4 space-y-2 bg-muted/50 rounded-t-lg aspect-[4/3] flex flex-col justify-center">
+            <ImagePlus className="h-10 w-10 text-muted-foreground mx-auto"/>
+            <Label htmlFor="imageUrl" className="text-center text-sm text-muted-foreground">URL de la imagen</Label>
+            <Input
+              id="imageUrl"
+              name="imageUrl"
+              value={editedProduct.imageUrl}
+              onChange={handleInputChange}
+              placeholder="https://example.com/image.png"
+              className="bg-background h-9"
+            />
+          </div>
+        ) : (
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={400}
+            height={300}
+            className="object-cover rounded-t-lg aspect-[4/3]"
+            data-ai-hint="bakery product"
+            unoptimized // Allows external URLs without domain config
+          />
+        )}
+        {!isEditing && !product.isAvailable && (
           <Badge variant="destructive" className="absolute top-2 right-2">{t('sold_out')}</Badge>
         )}
       </CardHeader>
       <CardContent className="flex-grow p-4">
          {isEditing ? (
           <div className="space-y-2">
+            <Label htmlFor="name" className="text-xs text-muted-foreground">Nombre</Label>
              <Input
+                id="name"
                 name="name"
                 value={editedProduct.name}
                 onChange={handleInputChange}
                 className="font-headline text-xl font-semibold h-9"
             />
+            <Label htmlFor="price" className="text-xs text-muted-foreground">Precio</Label>
             <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-primary">$</span>
                 <Input
                     type="number"
+                    id="price"
                     name="price"
                     value={editedProduct.price}
                     onChange={handleInputChange}
@@ -95,13 +116,16 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
         )}
 
         {isEditing ? (
+          <div className="space-y-2 mt-2">
+            <Label htmlFor="description" className="text-xs text-muted-foreground">Descripción</Label>
             <Textarea
+                id="description"
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
-                className="mt-2"
                 rows={3}
             />
+          </div>
         ) : (
             <CardDescription className="mt-2">{product.description}</CardDescription>
         )}
