@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { products as initialProducts } from '@/lib/data';
+import { products } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Plus, Trash2 } from 'lucide-react';
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 
-function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProduct }: { product: Product; onUpdateProduct: (updatedProduct: Product) => void; onSaveNewProduct: (newProduct: Product, oldId: string) => void; onDeleteProduct: (productId: string) => void; }) {
+function ProductCard({ product, onProductChange }: { product: Product; onProductChange: () => void; }) {
   const { t } = useContext(LanguageContext);
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
@@ -44,7 +44,6 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProdu
 
   useEffect(() => {
     setEditedProduct(product);
-    // When a new product is added and it's time to edit it, reset the image preview
     if (product.id.startsWith('new_')) {
       setImagePreview(null);
       setIsEditing(true);
@@ -66,25 +65,29 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProdu
   };
 
   const handleSave = () => {
-    const finalProduct = { ...editedProduct };
+    let finalProduct = { ...editedProduct };
     if (imagePreview) {
       finalProduct.imageUrl = imagePreview;
     }
     
-    if (finalProduct.id.startsWith('new_')) {
-      const oldId = finalProduct.id;
-      // Note: This is a mock ID. In a real DB, this would be generated server-side.
-      finalProduct.id = `prod_${Date.now()}`;
-      onSaveNewProduct(finalProduct, oldId);
-    } else {
-      onUpdateProduct(finalProduct);
-    }
+    const productIndex = products.findIndex(p => p.id === finalProduct.id);
 
+    if (productIndex !== -1) {
+        // It's an existing product (or a new one that was just added)
+        if (finalProduct.id.startsWith('new_')) {
+            finalProduct.id = `prod_${Date.now()}`;
+        }
+        products[productIndex] = finalProduct;
+    } else {
+        // This case should ideally not happen with the current logic
+    }
+    
     setIsEditing(false);
     setImagePreview(null);
+    onProductChange(); // Notify parent to re-render
     toast({
       title: 'Producto Guardado',
-      description: `${editedProduct.name} ha sido guardado.`,
+      description: `${finalProduct.name} ha sido guardado.`,
     });
   };
 
@@ -123,11 +126,19 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProdu
     if (editedProduct.stock < 10) return 'low_stock';
     return 'available';
   };
+  
+  const handleDelete = () => {
+      const productIndex = products.findIndex(p => p.id === product.id);
+      if (productIndex > -1) {
+          products.splice(productIndex, 1);
+          onProductChange();
+      }
+  };
 
 
   return (
     <Card className="flex flex-col">
-      <CardHeader className="p-0 relative">
+       <CardHeader className="p-0 relative">
         <div 
             className={`aspect-[4/3] rounded-t-lg ${isEditing ? 'cursor-pointer bg-muted/50 hover:bg-muted/80' : ''}`}
             onClick={handleImageClick}
@@ -260,7 +271,7 @@ function ProductCard({ product, onUpdateProduct, onSaveNewProduct, onDeleteProdu
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDeleteProduct(product.id)}>
+                        <AlertDialogAction onClick={handleDelete}>
                             Sí, eliminar
                         </AlertDialogAction>
                         </AlertDialogFooter>
@@ -307,19 +318,13 @@ function AddProductCard({ onAdd }: { onAdd: () => void }) {
 export default function ProductsPage() {
   const { t } = useContext(LanguageContext);
   const { user } = useContext(AuthContext);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-
-  const handleUpdateProduct = (updatedProduct: Product) => {
-    setProducts(prevProducts => 
-      prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
-    );
-  };
   
-  const handleSaveNewProduct = (newProduct: Product, oldId: string) => {
-    setProducts(prevProducts => 
-        prevProducts.map(p => p.id === oldId ? newProduct : p)
-    );
-  }
+  // A simple way to force re-render when the underlying data changes.
+  const [version, setVersion] = useState(0);
+
+  const forceRerender = () => {
+    setVersion(v => v + 1);
+  };
 
   const handleAddProduct = () => {
     const newProduct: Product = {
@@ -332,11 +337,8 @@ export default function ProductsPage() {
       isAvailable: true,
       stock: 100,
     };
-    setProducts(prev => [...prev, newProduct]);
-  };
-
-  const handleDeleteProduct = (productId: string) => {
-    setProducts(prev => prev.filter(p => p.id !== productId));
+    products.push(newProduct);
+    forceRerender();
   };
 
   return (
@@ -351,9 +353,7 @@ export default function ProductsPage() {
           <ProductCard 
             key={product.id} 
             product={product} 
-            onUpdateProduct={handleUpdateProduct}
-            onSaveNewProduct={handleSaveNewProduct}
-            onDeleteProduct={handleDeleteProduct}
+            onProductChange={forceRerender}
           />
         ))}
         {user?.role === 'admin' && <AddProductCard onAdd={handleAddProduct} />}

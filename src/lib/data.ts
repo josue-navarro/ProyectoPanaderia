@@ -1,6 +1,5 @@
 
 import type { Product, Store, Order, User } from './types';
-import { users as appUsers } from '@/lib/data';
 
 export const users: User[] = [
     {
@@ -37,6 +36,8 @@ export const users: User[] = [
     }
 ];
 
+// This will act as our in-memory database for products.
+// Changes to this array will be reflected across the app.
 export const products: Product[] = [];
 
 export const stores: Store[] = [
