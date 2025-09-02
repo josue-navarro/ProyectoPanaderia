@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus } from 'lucide-react';
-import React, { useContext, useState } from 'react';
+import { ShoppingCart, CheckCircle, Pencil, Save, ImagePlus, Upload } from 'lucide-react';
+import React, { useContext, useState, useRef } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,9 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   const [isAdded, setIsAdded] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
   const [editedProduct, setEditedProduct] = useState(product);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   const handleAddToCart = () => {
     toast({
@@ -36,11 +39,17 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
   
   const handleEdit = () => {
     setIsEditing(true);
+    setImagePreview(null);
   };
 
   const handleSave = () => {
-    onUpdateProduct(editedProduct);
+    const finalProduct = { ...editedProduct };
+    if (imagePreview) {
+      finalProduct.imageUrl = imagePreview;
+    }
+    onUpdateProduct(finalProduct);
     setIsEditing(false);
+    setImagePreview(null);
     toast({
       title: 'Producto Actualizado',
       description: `${editedProduct.name} ha sido guardado.`,
@@ -51,35 +60,66 @@ function ProductCard({ product, onUpdateProduct }: { product: Product; onUpdateP
     const { name, value } = e.target;
     setEditedProduct(prev => ({ ...prev, [name]: name === 'price' ? parseFloat(value) || 0 : value }));
   };
+  
+  const handleImageClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click();
+    }
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
 
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="p-0 relative">
-        {isEditing ? (
-          <div className="p-4 space-y-2 bg-muted/50 rounded-t-lg aspect-[4/3] flex flex-col justify-center">
-            <ImagePlus className="h-10 w-10 text-muted-foreground mx-auto"/>
-            <Label htmlFor="imageUrl" className="text-center text-sm text-muted-foreground">URL de la imagen</Label>
-            <Input
-              id="imageUrl"
-              name="imageUrl"
-              value={editedProduct.imageUrl}
-              onChange={handleInputChange}
-              placeholder="https://example.com/image.png"
-              className="bg-background h-9"
+        <div 
+            className={`aspect-[4/3] rounded-t-lg ${isEditing ? 'cursor-pointer bg-muted/50 hover:bg-muted/80' : ''}`}
+            onClick={handleImageClick}
+        >
+          {isEditing ? (
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+              {imagePreview || editedProduct.imageUrl ? (
+                <Image
+                  src={imagePreview || editedProduct.imageUrl}
+                  alt="Vista previa del producto"
+                  width={400}
+                  height={300}
+                  className="object-cover w-full h-full rounded-t-lg"
+                  unoptimized // Allows blob URLs and external URLs
+                />
+              ) : (
+                <>
+                  <ImagePlus className="h-12 w-12" />
+                  <p className="mt-2 text-sm font-semibold">Cambiar imagen</p>
+                </>
+              )}
+               <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+                accept="image/png, image/jpeg, image/gif"
+              />
+            </div>
+          ) : (
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              width={400}
+              height={300}
+              className="object-cover rounded-t-lg aspect-[4/3]"
+              data-ai-hint="bakery product"
+              unoptimized // Allows external URLs without domain config
             />
-          </div>
-        ) : (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            width={400}
-            height={300}
-            className="object-cover rounded-t-lg aspect-[4/3]"
-            data-ai-hint="bakery product"
-            unoptimized // Allows external URLs without domain config
-          />
-        )}
+          )}
+        </div>
         {!isEditing && !product.isAvailable && (
           <Badge variant="destructive" className="absolute top-2 right-2">{t('sold_out')}</Badge>
         )}
