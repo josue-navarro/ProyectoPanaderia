@@ -1,3 +1,4 @@
+
 export type UserRole = 'admin' | 'employee' | 'customer';
 
 export interface User {
@@ -29,6 +30,7 @@ export interface Store {
   city: string;
   phone: string;
   hours: string;
+  isOpen: boolean;
 }
 
 export type OrderStatus = 'Pending' | 'In Progress' | 'Ready for Pickup' | 'Completed' | 'Cancelled';
