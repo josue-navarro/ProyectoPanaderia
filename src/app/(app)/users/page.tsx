@@ -18,7 +18,7 @@ const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
 };
 
-export default function UsersPage() {
+function UserTable({ title, description, userList }: { title: string; description: string; userList: User[] }) {
     const { t } = useContext(LanguageContext);
 
     const getRoleVariant = (role: User['role']) => {
@@ -29,6 +29,58 @@ export default function UsersPage() {
             default: return 'default';
         }
     }
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>{t('user')}</TableHead>
+                            <TableHead>{t('email')}</TableHead>
+                            <TableHead>{t('phone_number_optional')}</TableHead>
+                            <TableHead className="text-center">{t('role_type')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {userList.map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar>
+                                            <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
+                                            <AvatarFallback>{getInitials(user.fullName)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{user.fullName}</p>
+                                            <p className="text-sm text-muted-foreground">@{user.username}</p>
+                                        </div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.phone || 'N/A'}</TableCell>
+                                <TableCell className="text-center">
+                                    <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default function UsersPage() {
+    const { t } = useContext(LanguageContext);
+
+    const adminUsers = users.filter(user => user.role === 'admin');
+    const employeeUsers = users.filter(user => user.role === 'employee');
+    const customerUsers = users.filter(user => user.role === 'customer');
 
     return (
         <div className="space-y-8">
@@ -36,47 +88,24 @@ export default function UsersPage() {
                 <h1 className="text-3xl font-bold font-headline">{t('users_title')}</h1>
                 <p className="text-muted-foreground">{t('users_description')}</p>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>{t('all_users_title')}</CardTitle>
-                    <CardDescription>{t('all_users_description')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>{t('user')}</TableHead>
-                                <TableHead>{t('email')}</TableHead>
-                                <TableHead>{t('phone_number_optional')}</TableHead>
-                                <TableHead className="text-center">{t('role_type')}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {users.map(user => (
-                                <TableRow key={user.id}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
-                                                <AvatarFallback>{getInitials(user.fullName)}</AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="font-medium">{user.fullName}</p>
-                                                <p className="text-sm text-muted-foreground">@{user.username}</p>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.phone || 'N/A'}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            
+            <div className="space-y-8">
+                <UserTable 
+                    title={t('role_admin') + 's'} 
+                    description="Usuarios con acceso total al sistema."
+                    userList={adminUsers} 
+                />
+                <UserTable 
+                    title={t('role_employee') + 's'} 
+                    description="Usuarios con acceso a la gestión de pedidos."
+                    userList={employeeUsers} 
+                />
+                <UserTable 
+                    title={t('role_customer') + 's'} 
+                    description="Usuarios que realizan compras en la plataforma."
+                    userList={customerUsers} 
+                />
+            </div>
         </div>
     );
 }
