@@ -10,7 +10,7 @@ export interface User {
   password?: string; // In a real app, this would be a hash
   role: UserRole;
   address?: string;
-  storeId?: string;
+  storeId?: string; // This might become a "primary" store or be deprecated.
   storeName?: string;
   verificationCode?: string;
 }
@@ -34,6 +34,7 @@ export interface Store {
   phone: string;
   hours: string;
   isOpen: boolean;
+  ownerId: string; // The ID of the user who created the store
 }
 
 export type OrderStatus = 'Pending' | 'In Progress' | 'Ready for Pickup' | 'Completed' | 'Cancelled';

@@ -85,6 +85,8 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
       onStoreChange();
     }
   };
+  
+  const canManageStore = user?.role === 'superAdmin' || (user?.role === 'admin' && user?.id === store.ownerId);
 
   return (
     <Card className="flex flex-col relative overflow-hidden">
@@ -168,7 +170,7 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
           </>
         )}
       </CardContent>
-       {(user?.role === 'admin' || user?.role === 'superAdmin') && (
+       {canManageStore && (
         <CardFooter className="flex gap-2 pt-4 mt-auto">
           {isEditing ? (
             <Button className="w-full" onClick={handleSave}>
@@ -231,6 +233,7 @@ export default function StoresPage() {
   const forceRerender = () => setVersion(v => v + 1);
 
   const handleAddStore = () => {
+    if (!user) return;
     const newStore: Store = {
       id: `new_${Date.now()}`,
       name: '',
@@ -239,6 +242,7 @@ export default function StoresPage() {
       phone: '',
       hours: t('hours_template'),
       isOpen: true,
+      ownerId: user.id, // Assign the current user as the owner
     };
     stores.push(newStore);
     forceRerender();
@@ -246,15 +250,14 @@ export default function StoresPage() {
 
   const displayedStores = useMemo(() => {
     if (!user) return [];
-    // Admins and employees only see their assigned store
-    if (user.role === 'admin' || user.role === 'employee') {
-      return stores.filter(store => store.id === user.storeId);
+    if (user.role === 'customer') {
+      return stores; // Customers see all stores
     }
-    // SuperAdmins and Customers see all stores
-    return stores;
-  }, [user]);
+    // superAdmin and admin see only the stores they own
+    return stores.filter(store => store.ownerId === user.id);
+  }, [user, version]);
 
-  const canManageStores = user?.role === 'superAdmin';
+  const canManageStores = user?.role === 'superAdmin' || user?.role === 'admin';
 
   return (
     <div className="space-y-8">

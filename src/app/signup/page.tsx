@@ -35,9 +35,6 @@ function SignupForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [selectedStoreId, setSelectedStoreId] = useState('');
-
-    const availableStores = stores.filter(store => !users.some(u => u.storeId === store.id && u.role === 'admin'));
 
     const validatePassword = (pass: string) => {
         const hasUpperCase = /[A-Z]/.test(pass);
@@ -56,10 +53,6 @@ function SignupForm() {
 
         const selectedRole = user?.role === 'superAdmin' ? 'admin' : 'customer';
 
-        if (user?.role === 'superAdmin' && !selectedStoreId) {
-             setError(t('store_is_required'));
-             return;
-        }
         if (!selectedRole) {
             setError(t('role_is_required'));
             return;
@@ -75,8 +68,6 @@ function SignupForm() {
 
         setIsSubmitting(true);
         try {
-            const selectedStore = stores.find(s => s.id === selectedStoreId);
-
             const success = await signup({
                 fullName,
                 email,
@@ -84,8 +75,6 @@ function SignupForm() {
                 username,
                 password,
                 role: selectedRole,
-                storeId: selectedStore?.id,
-                storeName: selectedStore?.name
             });
 
             if (success) {
@@ -112,7 +101,6 @@ function SignupForm() {
     };
 
     const isSuperAdminCreatingAdmin = user?.role === 'superAdmin';
-    const noStoresAvailable = isSuperAdminCreatingAdmin && availableStores.length === 0;
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -127,48 +115,21 @@ function SignupForm() {
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     )}
-                    {isSuperAdminCreatingAdmin && (
-                         <>
-                            {noStoresAvailable ? (
-                                <Alert>
-                                    <AlertDescription>
-                                        {t('no_stores_available_warning')}
-                                    </AlertDescription>
-                                </Alert>
-                            ) : (
-                                <div className="grid gap-2">
-                                    <Label htmlFor="store">{t('assign_store')}</Label>
-                                    <Select onValueChange={setSelectedStoreId} value={selectedStoreId} disabled={noStoresAvailable}>
-                                        <SelectTrigger id="store">
-                                            <SelectValue placeholder={t('select_store_placeholder')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableStores.map(store => (
-                                                <SelectItem key={store.id} value={store.id}>
-                                                    {store.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
-                        </>
-                    )}
                     <div className="grid gap-2">
                         <Label htmlFor="fullName">{t('full_name')}</Label>
-                        <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
+                        <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">{t('email')}</Label>
-                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
+                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">{t('phone_number_optional')}</Label>
-                        <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
+                        <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="username">{t('username')}</Label>
-                        <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
+                        <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="password">{t('password')}</Label>
@@ -179,7 +140,6 @@ function SignupForm() {
                                 value={password} 
                                 onChange={(e) => setPassword(e.target.value)} 
                                 required 
-                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             />
                             <Button
                                 type="button"
@@ -187,7 +147,6 @@ function SignupForm() {
                                 size="icon"
                                 className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
                                 onClick={() => setShowPassword(!showPassword)}
-                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
@@ -202,7 +161,6 @@ function SignupForm() {
                                 value={confirmPassword} 
                                 onChange={(e) => setConfirmPassword(e.target.value)} 
                                 required 
-                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             />
                              <Button
                                 type="button"
@@ -210,13 +168,12 @@ function SignupForm() {
                                 size="icon"
                                 className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             >
                                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                         </div>
                     </div>
-                    <Button onClick={handleSignup} className="w-full" disabled={isSubmitting || (noStoresAvailable && isSuperAdminCreatingAdmin)}>
+                    <Button onClick={handleSignup} className="w-full" disabled={isSubmitting}>
                       {isSubmitting ? t('creating_account') : (isSuperAdminCreatingAdmin ? t('add_admin_button') : t('create_account'))}
                     </Button>
                 </CardContent>
