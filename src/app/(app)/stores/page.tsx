@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { stores } from '@/lib/data';
 import { MapPin, Phone, Clock, Plus, Pencil, Save, Trash2, Store as StoreIcon } from 'lucide-react';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useMemo } from 'react';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
 import type { Store } from '@/lib/types';
@@ -244,7 +244,17 @@ export default function StoresPage() {
     forceRerender();
   };
 
-  const canManageStores = user?.role === 'admin' || user?.role === 'superAdmin';
+  const displayedStores = useMemo(() => {
+    if (!user) return [];
+    // Admins and employees only see their assigned store
+    if (user.role === 'admin' || user.role === 'employee') {
+      return stores.filter(store => store.id === user.storeId);
+    }
+    // SuperAdmins and Customers see all stores
+    return stores;
+  }, [user]);
+
+  const canManageStores = user?.role === 'superAdmin';
 
   return (
     <div className="space-y-8">
@@ -253,7 +263,7 @@ export default function StoresPage() {
         <p className="text-muted-foreground">{t('stores_description')}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stores.map(store => (
+        {displayedStores.map(store => (
           <StoreCard key={store.id} store={store} onStoreChange={forceRerender} />
         ))}
         {canManageStores && <AddStoreCard onAdd={handleAddStore} />}
@@ -261,5 +271,3 @@ export default function StoresPage() {
     </div>
   )
 }
-
-    
