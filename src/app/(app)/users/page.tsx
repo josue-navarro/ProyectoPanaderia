@@ -123,7 +123,7 @@ export default function UsersPage() {
                     />
                 )}
                 
-                {(user?.role === 'admin' || user?.role === 'superAdmin' && adminUsers.length > 0) && (
+                {user?.role === 'admin' && (
                     <>
                         <UserTable 
                             title={t('employee_users_title')} 
