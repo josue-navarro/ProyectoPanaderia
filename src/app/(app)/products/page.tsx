@@ -86,8 +86,8 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
     setImagePreview(null);
     onProductChange(); // Notify parent to re-render
     toast({
-      title: 'Producto Guardado',
-      description: `${finalProduct.name} ha sido guardado.`,
+      title: t('product_saved_title'),
+      description: t('product_saved_desc', { productName: finalProduct.name }),
     });
   };
 
@@ -148,7 +148,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
               {(imagePreview || editedProduct.imageUrl) ? (
                 <Image
                   src={imagePreview || editedProduct.imageUrl}
-                  alt="Vista previa del producto"
+                  alt={t('product_preview_alt')}
                   width={400}
                   height={300}
                   className="object-contain w-full h-full rounded-t-lg"
@@ -157,7 +157,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
               ) : (
                 <>
                   <ImagePlus className="h-12 w-12" />
-                  <p className="mt-2 text-sm font-semibold">Cambiar imagen</p>
+                  <p className="mt-2 text-sm font-semibold">{t('change_image')}</p>
                 </>
               )}
                <input
@@ -181,7 +181,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
           )}
         </div>
         {!isEditing && product.isAvailable && product.stock > 0 && product.stock < 10 && (
-          <Badge className="absolute top-2 left-2">Pocas unidades</Badge>
+          <Badge className="absolute top-2 left-2">{t('low_stock')}</Badge>
         )}
         {!isEditing && !product.isAvailable && (
           <Badge variant="destructive" className="absolute top-2 left-2">{t('sold_out')}</Badge>
@@ -190,7 +190,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
       <CardContent className="flex-grow p-4">
          {isEditing ? (
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-xs text-muted-foreground">Nombre</Label>
+            <Label htmlFor="name" className="text-xs text-muted-foreground">{t('product_name_label')}</Label>
              <Input
                 id="name"
                 name="name"
@@ -198,7 +198,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
                 onChange={handleInputChange}
                 className="font-headline text-xl font-semibold h-9"
             />
-            <Label htmlFor="price" className="text-xs text-muted-foreground">Precio</Label>
+            <Label htmlFor="price" className="text-xs text-muted-foreground">{t('price')}</Label>
             <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-primary">$</span>
                 <Input
@@ -210,7 +210,7 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
                     className="text-lg font-bold text-primary w-24 h-9"
                 />
             </div>
-            <Label htmlFor="description" className="text-xs text-muted-foreground">Descripción</Label>
+            <Label htmlFor="description" className="text-xs text-muted-foreground">{t('description')}</Label>
             <Textarea
                 id="description"
                 name="description"
@@ -218,19 +218,19 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
                 onChange={handleInputChange}
                 rows={3}
             />
-             <Label className="text-xs text-muted-foreground">Estado</Label>
+             <Label className="text-xs text-muted-foreground">{t('status')}</Label>
              <RadioGroup value={getCurrentStatus()} onValueChange={handleStatusChange} className="flex space-x-4 pt-1">
                 <div className="flex items-center space-x-2">
                     <RadioGroupItem value="available" id={`available-${product.id}`} />
-                    <Label htmlFor={`available-${product.id}`} className="font-normal">Disponible</Label>
+                    <Label htmlFor={`available-${product.id}`} className="font-normal">{t('status_available')}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                     <RadioGroupItem value="low_stock" id={`low_stock-${product.id}`} />
-                    <Label htmlFor={`low_stock-${product.id}`} className="font-normal">Pocas unidades</Label>
+                    <Label htmlFor={`low_stock-${product.id}`} className="font-normal">{t('low_stock')}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                     <RadioGroupItem value="sold_out" id={`sold_out-${product.id}`} />
-                    <Label htmlFor={`sold_out-${product.id}`} className="font-normal">Agotado</Label>
+                    <Label htmlFor={`sold_out-${product.id}`} className="font-normal">{t('sold_out')}</Label>
                 </div>
             </RadioGroup>
           </div>
@@ -249,30 +249,30 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
            <div className="w-full flex gap-2">
             {isEditing ? (
               <Button className="w-full" onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" /> Guardar
+                <Save className="mr-2 h-4 w-4" /> {t('save')}
               </Button>
             ) : (
                 <>
                 <Button className="flex-1" variant="outline" onClick={handleEdit}>
-                    <Pencil className="mr-2 h-4 w-4" /> Editar
+                    <Pencil className="mr-2 h-4 w-4" /> {t('edit')}
                 </Button>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button className="flex-1" variant="destructive">
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                            <Trash2 className="mr-2 h-4 w-4" /> {t('delete')}
                         </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('are_you_sure')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente el producto.
+                            {t('delete_product_confirm_message')}
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDelete}>
-                            Sí, eliminar
+                            {t('confirm_delete')}
                         </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
@@ -303,13 +303,14 @@ function ProductCard({ product, onProductChange }: { product: Product; onProduct
 }
 
 function AddProductCard({ onAdd }: { onAdd: () => void }) {
+  const { t } = useContext(LanguageContext);
   return (
     <Card 
       className="flex flex-col items-center justify-center aspect-[0.78] border-2 border-dashed bg-muted/50 hover:bg-muted/80 hover:border-primary transition-colors cursor-pointer"
       onClick={onAdd}
     >
       <Plus className="h-16 w-16 text-muted-foreground" />
-      <p className="mt-2 font-medium text-muted-foreground">Añadir Nuevo Producto</p>
+      <p className="mt-2 font-medium text-muted-foreground">{t('add_new_product')}</p>
     </Card>
   )
 }
@@ -329,7 +330,7 @@ export default function ProductsPage() {
   const handleAddProduct = () => {
     const newProduct: Product = {
       id: `new_${Date.now()}`,
-      name: 'Nuevo Producto',
+      name: t('new_product_placeholder'),
       description: '',
       price: 0,
       imageUrl: '',
@@ -361,3 +362,5 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+    

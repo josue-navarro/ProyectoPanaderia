@@ -64,8 +64,8 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
     setIsEditing(false);
     onStoreChange();
     toast({
-      title: 'Tienda Guardada',
-      description: `${finalStore.name} ha sido guardada.`,
+      title: t('store_saved_title'),
+      description: t('store_saved_desc', { storeName: finalStore.name }),
     });
   };
 
@@ -96,20 +96,20 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
           )}
           variant="outline"
         >
-          {store.isOpen ? 'Abierto' : 'Cerrado'}
+          {store.isOpen ? t('store_open') : t('store_closed')}
         </Badge>
       )}
       <CardHeader>
         {isEditing ? (
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-xs text-muted-foreground">Nombre de la tienda</Label>
+            <Label htmlFor="name" className="text-xs text-muted-foreground">{t('store_name_label')}</Label>
             <Input
               id="name"
               name="name"
               value={editedStore.name}
               onChange={handleInputChange}
               className="font-headline text-xl font-semibold h-9"
-              placeholder='Nombre de la Tienda'
+              placeholder={t('store_name_placeholder')}
             />
           </div>
         ) : (
@@ -120,26 +120,26 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
         {isEditing ? (
            <div className="space-y-4">
              <div>
-                <Label htmlFor="address" className="text-xs text-muted-foreground">Dirección</Label>
-                <Input id="address" name="address" value={editedStore.address} onChange={handleInputChange} placeholder="Ej: Av. Siempre Viva 742" />
+                <Label htmlFor="address" className="text-xs text-muted-foreground">{t('address_label')}</Label>
+                <Input id="address" name="address" value={editedStore.address} onChange={handleInputChange} placeholder={t('address_placeholder')} />
              </div>
              <div>
-                <Label htmlFor="city" className="text-xs text-muted-foreground">Ciudad</Label>
-                <Input id="city" name="city" value={editedStore.city} onChange={handleInputChange} placeholder="Ej: Springfield" />
+                <Label htmlFor="city" className="text-xs text-muted-foreground">{t('city_label')}</Label>
+                <Input id="city" name="city" value={editedStore.city} onChange={handleInputChange} placeholder={t('city_placeholder')} />
              </div>
               <div>
-                <Label htmlFor="phone" className="text-xs text-muted-foreground">Teléfono</Label>
-                <Input id="phone" name="phone" value={editedStore.phone} onChange={handleInputChange} placeholder="Ej: +1 (555) 123-4567" />
+                <Label htmlFor="phone" className="text-xs text-muted-foreground">{t('phone_label')}</Label>
+                <Input id="phone" name="phone" value={editedStore.phone} onChange={handleInputChange} placeholder={t('phone_placeholder')} />
               </div>
               <div>
-                 <Label htmlFor="hours" className="text-xs text-muted-foreground">Horario</Label>
-                <Textarea id="hours" name="hours" value={editedStore.hours} onChange={handleInputChange} rows={2} placeholder="Ej: L-V: 9am - 8pm" />
+                 <Label htmlFor="hours" className="text-xs text-muted-foreground">{t('hours_label')}</Label>
+                <Textarea id="hours" name="hours" value={editedStore.hours} onChange={handleInputChange} rows={2} placeholder={t('hours_placeholder')} />
               </div>
               <div className="flex items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
-                    <Label>Estado de la tienda</Label>
+                    <Label>{t('store_status_label')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Indica si la tienda está abierta o cerrada al público.
+                      {t('store_status_desc')}
                     </p>
                   </div>
                   <Switch
@@ -172,30 +172,30 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
         <CardFooter className="flex gap-2 pt-4 mt-auto">
           {isEditing ? (
             <Button className="w-full" onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" /> Guardar
+              <Save className="mr-2 h-4 w-4" /> {t('save')}
             </Button>
           ) : (
               <>
               <Button className="flex-1" variant="outline" onClick={handleEdit}>
-                  <Pencil className="mr-2 h-4 w-4" /> Editar
+                  <Pencil className="mr-2 h-4 w-4" /> {t('edit')}
               </Button>
               <AlertDialog>
                   <AlertDialogTrigger asChild>
                       <Button className="flex-1" variant="destructive">
-                          <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                          <Trash2 className="mr-2 h-4 w-4" /> {t('delete')}
                       </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                       <AlertDialogHeader>
-                      <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                      <AlertDialogTitle>{t('are_you_sure')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                          Esta acción no se puede deshacer. Esto eliminará permanentemente la tienda.
+                          {t('delete_store_confirm_message')}
                       </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                       <AlertDialogAction onClick={handleDelete}>
-                          Sí, eliminar
+                          {t('confirm_delete')}
                       </AlertDialogAction>
                       </AlertDialogFooter>
                   </AlertDialogContent>
@@ -210,13 +210,14 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
 
 
 function AddStoreCard({ onAdd }: { onAdd: () => void }) {
+  const { t } = useContext(LanguageContext);
   return (
     <Card 
       className="flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed bg-muted/50 hover:bg-muted/80 hover:border-primary transition-colors cursor-pointer"
       onClick={onAdd}
     >
       <Plus className="h-16 w-16 text-muted-foreground" />
-      <p className="mt-2 font-medium text-muted-foreground">Añadir Nueva Tienda</p>
+      <p className="mt-2 font-medium text-muted-foreground">{t('add_new_store')}</p>
     </Card>
   )
 }
@@ -236,7 +237,7 @@ export default function StoresPage() {
       address: '',
       city: '',
       phone: '',
-      hours: 'L-V: \nS-D: ',
+      hours: t('hours_template'),
       isOpen: true,
     };
     stores.push(newStore);
@@ -260,3 +261,5 @@ export default function StoresPage() {
     </div>
   )
 }
+
+    
