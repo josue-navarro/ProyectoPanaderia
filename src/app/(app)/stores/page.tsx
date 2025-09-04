@@ -57,6 +57,8 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
         finalStore.id = `store_${Date.now()}`;
       }
       stores[storeIndex] = finalStore;
+    } else {
+        // This case should not happen if a new store is pushed correctly
     }
 
     setIsEditing(false);
@@ -166,7 +168,7 @@ function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () =
           </>
         )}
       </CardContent>
-       {user?.role === 'admin' && (
+       {(user?.role === 'admin' || user?.role === 'superAdmin') && (
         <CardFooter className="flex gap-2 pt-4 mt-auto">
           {isEditing ? (
             <Button className="w-full" onClick={handleSave}>
@@ -241,6 +243,8 @@ export default function StoresPage() {
     forceRerender();
   };
 
+  const canManageStores = user?.role === 'admin' || user?.role === 'superAdmin';
+
   return (
     <div className="space-y-8">
       <div>
@@ -251,7 +255,7 @@ export default function StoresPage() {
         {stores.map(store => (
           <StoreCard key={store.id} store={store} onStoreChange={forceRerender} />
         ))}
-        {user?.role === 'admin' && <AddStoreCard onAdd={handleAddStore} />}
+        {canManageStores && <AddStoreCard onAdd={handleAddStore} />}
       </div>
     </div>
   )
