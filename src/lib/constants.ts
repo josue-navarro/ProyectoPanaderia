@@ -1,8 +1,13 @@
-import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText, BarChart2, Languages } from 'lucide-react';
+
+import { Croissant, LayoutGrid, ListOrdered, MapPin, Sparkles, Users, FileText, BarChart2, Languages, Shield } from 'lucide-react';
 import type { UserRole } from '@/components/auth-provider';
 import type { TranslationKey } from './translations';
 
 export const navLinks: Record<UserRole, { href: string; label: TranslationKey; icon: React.ElementType }[]> = {
+  superAdmin: [
+    { href: '/users', label: 'nav_manage_admins', icon: Shield },
+    { href: '/stores', label: 'nav_all_stores', icon: MapPin },
+  ],
   customer: [
     { href: '/products', label: 'nav_products', icon: Croissant },
     { href: '/orders', label: 'nav_my_orders', icon: ListOrdered },

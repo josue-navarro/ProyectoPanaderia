@@ -3,12 +3,12 @@ import type { Product, Store, Order, User } from './types';
 
 export const users: User[] = [
     {
-        id: 'user_admin',
-        fullName: 'Admin User',
-        email: 'admin@panaderia.cloud',
-        username: 'admin',
+        id: 'user_super_admin',
+        fullName: 'Super Admin',
+        email: 'super@panaderia.cloud',
+        username: 'superadmin',
         password: 'Password1',
-        role: 'admin',
+        role: 'superAdmin',
         address: '123 Admin Way, Suite 100, San Francisco, CA 94102',
     },
     {

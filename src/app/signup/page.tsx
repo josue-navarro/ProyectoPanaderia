@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 
 function SignupForm() {
-    const { signup } = useContext(AuthContext);
+    const { user, signup } = useContext(AuthContext);
     const { t } = useContext(LanguageContext);
     const router = useRouter();
     const { toast } = useToast();
@@ -40,10 +40,18 @@ function SignupForm() {
         const hasNumber = /\d/.test(pass);
         return pass.length >= 8 && hasUpperCase && hasLowerCase && hasNumber;
     }
+    
+    // Determine the title based on whether a user (superAdmin) is logged in
+    const pageTitle = user?.role === 'superAdmin' ? t('nav_manage_admins') : t('signup_title');
+    const pageDescription = user?.role === 'superAdmin' ? t('admin_users_description') : t('signup_desc');
+
 
     const handleSignup = async () => {
         setError('');
-        if (!role) {
+
+        const selectedRole = user?.role === 'superAdmin' ? 'admin' : 'customer';
+
+        if (!selectedRole) {
             setError(t('role_is_required'));
             return;
         }
@@ -64,7 +72,7 @@ function SignupForm() {
                 phone,
                 username,
                 password,
-                role
+                role: selectedRole
             });
 
             if (success) {
@@ -72,6 +80,8 @@ function SignupForm() {
                   title: t('signup_success'),
                   description: t('signup_success_desc'),
                 });
+                // If a superAdmin created an admin, they might want to stay on the users page.
+                // For now, we redirect to login for simplicity.
                 router.push('/');
             }
         } catch (err: any) {
@@ -91,8 +101,8 @@ function SignupForm() {
         <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
              <Card className="w-full max-w-md shadow-2xl">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline">{t('signup_title')}</CardTitle>
-                    <CardDescription>{t('signup_desc')}</CardDescription>
+                    <CardTitle className="text-2xl font-headline">{pageTitle}</CardTitle>
+                    <CardDescription>{pageDescription}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     {error && (
@@ -100,19 +110,14 @@ function SignupForm() {
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     )}
-                    <div className="grid gap-2">
-                        <Label htmlFor="role">{t('role_type')}</Label>
-                        <Select onValueChange={(value) => setRole(value as UserRole)} value={role}>
-                            <SelectTrigger id="role">
-                                <SelectValue placeholder={t('select_role_placeholder')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="customer">{t('role_customer')}</SelectItem>
-                                <SelectItem value="employee">{t('role_employee')}</SelectItem>
-                                <SelectItem value="admin">{t('role_admin')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                     {/* The role selection is only for the non-logged-in sign-up flow, now simplified */}
+                    {user?.role === 'superAdmin' && (
+                        <Alert>
+                            <AlertDescription>
+                                {t('role_type')}: <strong>{t('role_admin')}</strong>
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     <div className="grid gap-2">
                         <Label htmlFor="fullName">{t('full_name')}</Label>
                         <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required />

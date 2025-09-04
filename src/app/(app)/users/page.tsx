@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { users } from '@/lib/data';
 import type { User } from '@/lib/types';
 import { LanguageContext } from '@/components/language-provider';
+import { AuthContext } from '@/components/auth-provider';
 
 const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -23,6 +24,7 @@ function UserTable({ title, description, userList }: { title: string; descriptio
 
     const getRoleVariant = (role: User['role']) => {
         switch (role) {
+            case 'superAdmin': return 'default';
             case 'admin': return 'destructive';
             case 'employee': return 'secondary';
             case 'customer': return 'outline';
@@ -77,6 +79,7 @@ function UserTable({ title, description, userList }: { title: string; descriptio
 
 export default function UsersPage() {
     const { t } = useContext(LanguageContext);
+    const { user } = useContext(AuthContext);
 
     const adminUsers = users.filter(user => user.role === 'admin');
     const employeeUsers = users.filter(user => user.role === 'employee');
@@ -90,21 +93,28 @@ export default function UsersPage() {
             </div>
             
             <div className="space-y-8">
-                <UserTable 
-                    title={t('role_admin') + 's'} 
-                    description="Usuarios con acceso total al sistema."
-                    userList={adminUsers} 
-                />
-                <UserTable 
-                    title={t('role_employee') + 's'} 
-                    description="Usuarios con acceso a la gestión de pedidos."
-                    userList={employeeUsers} 
-                />
-                <UserTable 
-                    title={t('role_customer') + 's'} 
-                    description="Usuarios que realizan compras en la plataforma."
-                    userList={customerUsers} 
-                />
+                {user?.role === 'superAdmin' || user?.role === 'admin' ? (
+                    <UserTable 
+                        title={t('admin_users_title')} 
+                        description={t('admin_users_description')}
+                        userList={adminUsers} 
+                    />
+                ) : null}
+
+                {user?.role === 'admin' && (
+                    <>
+                        <UserTable 
+                            title={t('employee_users_title')} 
+                            description={t('employee_users_description')}
+                            userList={employeeUsers} 
+                        />
+                        <UserTable 
+                            title={t('customer_users_title')} 
+                            description={t('customer_users_description')}
+                            userList={customerUsers} 
+                        />
+                    </>
+                )}
             </div>
         </div>
     );
