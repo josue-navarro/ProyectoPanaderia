@@ -10,6 +10,7 @@ import { users } from '@/lib/data';
 import type { User } from '@/lib/types';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
+import { User2 } from 'lucide-react';
 
 const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -39,39 +40,46 @@ function UserTable({ title, description, userList, showStore = false }: { title:
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>{t('user')}</TableHead>
-                            <TableHead>{t('email')}</TableHead>
-                             {showStore && <TableHead>{t('store_assigned')}</TableHead>}
-                            <TableHead className="text-center">{t('role_type')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {userList.map(user => (
-                            <TableRow key={user.id}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar>
-                                            <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
-                                            <AvatarFallback>{getInitials(user.fullName)}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="font-medium">{user.fullName}</p>
-                                            <p className="text-sm text-muted-foreground">@{user.username}</p>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                {showStore && <TableCell>{user.storeName || 'N/A'}</TableCell>}
-                                <TableCell className="text-center">
-                                    <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
-                                </TableCell>
+                {userList.length > 0 ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>{t('user')}</TableHead>
+                                <TableHead>{t('email')}</TableHead>
+                                {showStore && <TableHead>{t('store_assigned')}</TableHead>}
+                                <TableHead className="text-center">{t('role_type')}</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {userList.map(user => (
+                                <TableRow key={user.id}>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
+                                                <AvatarFallback>{getInitials(user.fullName)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-medium">{user.fullName}</p>
+                                                <p className="text-sm text-muted-foreground">@{user.username}</p>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    {showStore && <TableCell>{user.storeName || 'N/A'}</TableCell>}
+                                    <TableCell className="text-center">
+                                        <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                     <div className="flex flex-col items-center justify-center text-center p-8 text-muted-foreground">
+                        <User2 className="h-12 w-12 mb-4" />
+                        <p className="font-medium">{t('no_admin_users_message')}</p>
+                    </div>
+                )}
             </CardContent>
         </Card>
     )
@@ -102,7 +110,7 @@ export default function UsersPage() {
                     />
                 )}
                 
-                {user?.role === 'admin' && (
+                {(user?.role === 'admin' || user?.role === 'superAdmin' && adminUsers.length > 0) && (
                     <>
                         <UserTable 
                             title={t('employee_users_title')} 
