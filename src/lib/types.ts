@@ -10,6 +10,8 @@ export interface User {
   password?: string; // In a real app, this would be a hash
   role: UserRole;
   address?: string;
+  storeId?: string;
+  storeName?: string;
 }
 
 export interface Product {

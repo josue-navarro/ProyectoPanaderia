@@ -40,6 +40,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (existingUser) {
       throw new Error('User with this username or email already exists.');
     }
+    
+    if (userData.role === 'admin' && userData.storeId) {
+        const storeInUse = users.some(u => u.storeId === userData.storeId);
+        if (storeInUse) {
+            throw new Error('This store already has an administrator.');
+        }
+    }
+
     const newUser: User = {
       id: `user_${Date.now()}`,
       ...userData,

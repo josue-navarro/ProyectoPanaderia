@@ -19,7 +19,7 @@ const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
 };
 
-function UserTable({ title, description, userList }: { title: string; description: string; userList: User[] }) {
+function UserTable({ title, description, userList, showStore = false }: { title: string; description: string; userList: User[]; showStore?: boolean; }) {
     const { t } = useContext(LanguageContext);
 
     const getRoleVariant = (role: User['role']) => {
@@ -44,7 +44,7 @@ function UserTable({ title, description, userList }: { title: string; descriptio
                         <TableRow>
                             <TableHead>{t('user')}</TableHead>
                             <TableHead>{t('email')}</TableHead>
-                            <TableHead>{t('phone_number_optional')}</TableHead>
+                             {showStore && <TableHead>{t('store_assigned')}</TableHead>}
                             <TableHead className="text-center">{t('role_type')}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -64,7 +64,7 @@ function UserTable({ title, description, userList }: { title: string; descriptio
                                     </div>
                                 </TableCell>
                                 <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.phone || 'N/A'}</TableCell>
+                                {showStore && <TableCell>{user.storeName || 'N/A'}</TableCell>}
                                 <TableCell className="text-center">
                                     <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
                                 </TableCell>
@@ -81,9 +81,9 @@ export default function UsersPage() {
     const { t } = useContext(LanguageContext);
     const { user } = useContext(AuthContext);
 
-    const adminUsers = users.filter(user => user.role === 'admin');
-    const employeeUsers = users.filter(user => user.role === 'employee');
-    const customerUsers = users.filter(user => user.role === 'customer');
+    const adminUsers = users.filter(u => u.role === 'admin');
+    const employeeUsers = users.filter(u => u.role === 'employee');
+    const customerUsers = users.filter(u => u.role === 'customer');
 
     return (
         <div className="space-y-8">
@@ -93,14 +93,15 @@ export default function UsersPage() {
             </div>
             
             <div className="space-y-8">
-                {user?.role === 'superAdmin' || user?.role === 'admin' ? (
+                {user?.role === 'superAdmin' && (
                     <UserTable 
                         title={t('admin_users_title')} 
                         description={t('admin_users_description')}
                         userList={adminUsers} 
+                        showStore={true}
                     />
-                ) : null}
-
+                )}
+                
                 {user?.role === 'admin' && (
                     <>
                         <UserTable 
