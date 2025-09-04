@@ -10,7 +10,9 @@ import { users } from '@/lib/data';
 import type { User } from '@/lib/types';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
-import { User2 } from 'lucide-react';
+import { User2, PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -20,7 +22,7 @@ const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
 };
 
-function UserTable({ title, description, userList, showStore = false }: { title: string; description: string; userList: User[]; showStore?: boolean; }) {
+function UserTable({ title, description, userList, showStore = false, actionButton }: { title: string; description: string; userList: User[]; showStore?: boolean; actionButton?: React.ReactNode }) {
     const { t } = useContext(LanguageContext);
 
     const getRoleVariant = (role: User['role']) => {
@@ -35,9 +37,12 @@ function UserTable({ title, description, userList, showStore = false }: { title:
     
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                </div>
+                {actionButton}
             </CardHeader>
             <CardContent>
                 {userList.length > 0 ? (
@@ -107,6 +112,14 @@ export default function UsersPage() {
                         description={t('admin_users_description')}
                         userList={adminUsers} 
                         showStore={true}
+                        actionButton={
+                             <Button asChild>
+                                <Link href="/signup">
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    {t('add_admin_button')}
+                                </Link>
+                            </Button>
+                        }
                     />
                 )}
                 

@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { stores } from '@/lib/data';
+import { stores, users } from '@/lib/data';
 import type { Store } from '@/lib/types';
 
 
@@ -37,7 +37,7 @@ function SignupForm() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [selectedStoreId, setSelectedStoreId] = useState('');
 
-    const availableStores = stores.filter(store => !users.some(u => u.storeId === store.id));
+    const availableStores = stores.filter(store => !users.some(u => u.storeId === store.id && u.role === 'admin'));
 
     const validatePassword = (pass: string) => {
         const hasUpperCase = /[A-Z]/.test(pass);
@@ -47,8 +47,8 @@ function SignupForm() {
     }
     
     // Determine the title based on whether a user (superAdmin) is logged in
-    const pageTitle = user?.role === 'superAdmin' ? t('nav_manage_admins') : t('signup_title');
-    const pageDescription = user?.role === 'superAdmin' ? t('admin_users_description') : t('signup_desc');
+    const pageTitle = user?.role === 'superAdmin' ? t('add_admin_title') : t('signup_title');
+    const pageDescription = user?.role === 'superAdmin' ? t('add_admin_desc') : t('signup_desc');
 
 
     const handleSignup = async () => {
@@ -90,8 +90,8 @@ function SignupForm() {
 
             if (success) {
                 toast({
-                  title: t('signup_success'),
-                  description: t('signup_success_desc'),
+                  title: user?.role === 'superAdmin' ? t('admin_creation_success_title') : t('signup_success'),
+                  description: user?.role === 'superAdmin' ? t('admin_creation_success_desc') : t('signup_success_desc'),
                 });
                 if (user?.role === 'superAdmin') {
                     router.push('/users');
@@ -156,19 +156,19 @@ function SignupForm() {
                     )}
                     <div className="grid gap-2">
                         <Label htmlFor="fullName">{t('full_name')}</Label>
-                        <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required disabled={noStoresAvailable} />
+                        <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">{t('email')}</Label>
-                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={noStoresAvailable} />
+                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">{t('phone_number_optional')}</Label>
-                        <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={noStoresAvailable} />
+                        <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="username">{t('username')}</Label>
-                        <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required disabled={noStoresAvailable} />
+                        <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required disabled={noStoresAvailable && isSuperAdminCreatingAdmin} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="password">{t('password')}</Label>
@@ -179,7 +179,7 @@ function SignupForm() {
                                 value={password} 
                                 onChange={(e) => setPassword(e.target.value)} 
                                 required 
-                                disabled={noStoresAvailable}
+                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             />
                             <Button
                                 type="button"
@@ -187,7 +187,7 @@ function SignupForm() {
                                 size="icon"
                                 className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
                                 onClick={() => setShowPassword(!showPassword)}
-                                disabled={noStoresAvailable}
+                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
@@ -202,7 +202,7 @@ function SignupForm() {
                                 value={confirmPassword} 
                                 onChange={(e) => setConfirmPassword(e.target.value)} 
                                 required 
-                                disabled={noStoresAvailable}
+                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             />
                              <Button
                                 type="button"
@@ -210,19 +210,19 @@ function SignupForm() {
                                 size="icon"
                                 className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                disabled={noStoresAvailable}
+                                disabled={noStoresAvailable && isSuperAdminCreatingAdmin}
                             >
                                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                         </div>
                     </div>
-                    <Button onClick={handleSignup} className="w-full" disabled={isSubmitting || noStoresAvailable}>
-                      {isSubmitting ? t('creating_account') : t('create_account')}
+                    <Button onClick={handleSignup} className="w-full" disabled={isSubmitting || (noStoresAvailable && isSuperAdminCreatingAdmin)}>
+                      {isSubmitting ? t('creating_account') : (isSuperAdminCreatingAdmin ? t('add_admin_button') : t('create_account'))}
                     </Button>
                 </CardContent>
                  <CardFooter className="flex justify-center">
                     <Button asChild variant="link" size="sm">
-                      <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> {t('back_to_login')}</Link>
+                      <Link href={user ? "/users" : "/"}><ArrowLeft className="mr-2 h-4 w-4" /> {user ? t('back_to_users') : t('back_to_login')}</Link>
                     </Button>
                 </CardFooter>
              </Card>
