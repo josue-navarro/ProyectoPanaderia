@@ -70,40 +70,15 @@ export const users: User[] = [
 // Changes to this array will be reflected across the app.
 export const products: Product[] = [];
 
-export const stores: Store[] = [
-  {
-    id: 'store_01',
-    name: 'Panadería Cloud Downtown',
-    address: '123 Main St',
-    city: 'San Francisco, CA 94102',
-    phone: '(415) 555-0101',
-    hours: 'Mon-Fri: 6am - 6pm, Sat-Sun: 7am - 4pm'
-  },
-  {
-    id: 'store_02',
-    name: 'Panadería Cloud Mission',
-    address: '456 Valencia St',
-    city: 'San Francisco, CA 94103',
-    phone: '(415) 555-0102',
-    hours: 'Mon-Sun: 7am - 5pm'
-  },
-  {
-    id: 'store_03',
-    name: 'Panadería Cloud Oakland',
-    address: '789 Broadway',
-    city: 'Oakland, CA 94607',
-    phone: '(510) 555-0103',
-    hours: 'Mon-Fri: 6:30am - 5:30pm, Sat-Sun: 8am - 4pm'
-  }
-];
+export const stores: Store[] = [];
 
 export const orders: Order[] = [
   {
     id: '#86754',
     customerName: 'Jane Doe',
     items: [
-      { product: products[0] || { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 2 },
-      { product: products[1] || { id: 'p2', name: 'Sourdough', price: 8.0 } as any, quantity: 1 },
+      { product: { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 2 },
+      { product: { id: 'p2', name: 'Sourdough', price: 8.0 } as any, quantity: 1 },
     ],
     total: 15.0,
     status: 'Ready for Pickup',
@@ -115,7 +90,7 @@ export const orders: Order[] = [
     id: '#86755',
     customerName: 'John Smith',
     items: [
-       { product: products[2] || { id: 'p3', name: 'Baguette', price: 4.0 } as any, quantity: 1 },
+       { product: { id: 'p3', name: 'Baguette', price: 4.0 } as any, quantity: 1 },
     ],
     total: 4.00,
     status: 'In Progress',
@@ -127,7 +102,7 @@ export const orders: Order[] = [
     id: '#86756',
     customerName: 'Peter Jones',
     items: [
-       { product: products[0] || { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 4 },
+       { product: { id: 'p1', name: 'Croissant', price: 3.5 } as any, quantity: 4 },
     ],
     total: 14.00,
     status: 'Completed',

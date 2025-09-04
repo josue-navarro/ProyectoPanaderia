@@ -1,13 +1,214 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { stores } from '@/lib/data';
-import { MapPin, Phone, Clock } from 'lucide-react';
-import { useContext } from 'react';
+import { MapPin, Phone, Clock, Plus, Pencil, Save, Trash2 } from 'lucide-react';
+import { useContext, useState, useEffect } from 'react';
 import { LanguageContext } from '@/components/language-provider';
+import { AuthContext } from '@/components/auth-provider';
+import type { Store } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from '@/hooks/use-toast';
+
+
+function StoreCard({ store, onStoreChange }: { store: Store; onStoreChange: () => void; }) {
+  const { t } = useContext(LanguageContext);
+  const { user } = useContext(AuthContext);
+  const { toast } = useToast();
+
+  const [isEditing, setIsEditing] = useState(store.id.startsWith('new_'));
+  const [editedStore, setEditedStore] = useState(store);
+
+  useEffect(() => {
+    setEditedStore(store);
+    if (store.id.startsWith('new_')) {
+      setIsEditing(true);
+    }
+  }, [store]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+  
+  const handleSave = () => {
+    let finalStore = { ...editedStore };
+    const storeIndex = stores.findIndex(s => s.id === finalStore.id);
+
+    if (storeIndex !== -1) {
+      if (finalStore.id.startsWith('new_')) {
+        finalStore.id = `store_${Date.now()}`;
+      }
+      stores[storeIndex] = finalStore;
+    }
+
+    setIsEditing(false);
+    onStoreChange();
+    toast({
+      title: 'Tienda Guardada',
+      description: `${finalStore.name} ha sido guardada.`,
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setEditedStore(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDelete = () => {
+    const storeIndex = stores.findIndex(s => s.id === store.id);
+    if (storeIndex > -1) {
+      stores.splice(storeIndex, 1);
+      onStoreChange();
+    }
+  };
+
+  return (
+    <Card className="flex flex-col">
+      <CardHeader>
+        {isEditing ? (
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-xs text-muted-foreground">Nombre de la tienda</Label>
+            <Input
+              id="name"
+              name="name"
+              value={editedStore.name}
+              onChange={handleInputChange}
+              className="font-headline text-xl font-semibold h-9"
+            />
+          </div>
+        ) : (
+          <CardTitle className="font-headline">{store.name}</CardTitle>
+        )}
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm flex-grow">
+        {isEditing ? (
+           <div className="space-y-4">
+             <div>
+                <Label htmlFor="address" className="text-xs text-muted-foreground">Dirección</Label>
+                <Input id="address" name="address" value={editedStore.address} onChange={handleInputChange} />
+             </div>
+             <div>
+                <Label htmlFor="city" className="text-xs text-muted-foreground">Ciudad</Label>
+                <Input id="city" name="city" value={editedStore.city} onChange={handleInputChange} />
+             </div>
+              <div>
+                <Label htmlFor="phone" className="text-xs text-muted-foreground">Teléfono</Label>
+                <Input id="phone" name="phone" value={editedStore.phone} onChange={handleInputChange} />
+              </div>
+              <div>
+                 <Label htmlFor="hours" className="text-xs text-muted-foreground">Horario</Label>
+                <Textarea id="hours" name="hours" value={editedStore.hours} onChange={handleInputChange} rows={2} />
+              </div>
+           </div>
+        ) : (
+          <>
+            <div className="flex items-start gap-3">
+              <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
+              <div>
+                  <p>{store.address}</p>
+                  <p className="text-muted-foreground">{store.city}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Phone className="h-4 w-4 text-muted-foreground" />
+              <p>{store.phone}</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
+              <p className="whitespace-pre-line">{store.hours}</p>
+            </div>
+          </>
+        )}
+      </CardContent>
+       {user?.role === 'admin' && (
+        <CardContent className="flex gap-2 pt-0">
+          {isEditing ? (
+            <Button className="w-full" onClick={handleSave}>
+              <Save className="mr-2 h-4 w-4" /> Guardar
+            </Button>
+          ) : (
+              <>
+              <Button className="flex-1" variant="outline" onClick={handleEdit}>
+                  <Pencil className="mr-2 h-4 w-4" /> Editar
+              </Button>
+              <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                      <Button className="flex-1" variant="destructive">
+                          <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                      </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                      <AlertDialogHeader>
+                      <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                          Esta acción no se puede deshacer. Esto eliminará permanentemente la tienda.
+                      </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete}>
+                          Sí, eliminar
+                      </AlertDialogAction>
+                      </AlertDialogFooter>
+                  </AlertDialogContent>
+              </AlertDialog>
+              </>
+          )}
+        </CardContent>
+       )}
+    </Card>
+  )
+}
+
+
+function AddStoreCard({ onAdd }: { onAdd: () => void }) {
+  return (
+    <Card 
+      className="flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed bg-muted/50 hover:bg-muted/80 hover:border-primary transition-colors cursor-pointer"
+      onClick={onAdd}
+    >
+      <Plus className="h-16 w-16 text-muted-foreground" />
+      <p className="mt-2 font-medium text-muted-foreground">Añadir Nueva Tienda</p>
+    </Card>
+  )
+}
+
 
 export default function StoresPage() {
   const { t } = useContext(LanguageContext);
+  const { user } = useContext(AuthContext);
+
+  const [version, setVersion] = useState(0);
+  const forceRerender = () => setVersion(v => v + 1);
+
+  const handleAddStore = () => {
+    const newStore: Store = {
+      id: `new_${Date.now()}`,
+      name: 'Nueva Tienda',
+      address: '',
+      city: '',
+      phone: '',
+      hours: 'L-V: \nS-D: '
+    };
+    stores.push(newStore);
+    forceRerender();
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -16,29 +217,9 @@ export default function StoresPage() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stores.map(store => (
-          <Card key={store.id}>
-            <CardHeader>
-              <CardTitle className="font-headline">{store.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <div>
-                    <p>{store.address}</p>
-                    <p className="text-muted-foreground">{store.city}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <p>{store.phone}</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <p>{store.hours}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <StoreCard key={store.id} store={store} onStoreChange={forceRerender} />
         ))}
+        {user?.role === 'admin' && <AddStoreCard onAdd={handleAddStore} />}
       </div>
     </div>
   )
