@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useContext, useState, useRef, useEffect } from 'react';
+import { useContext, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthContext } from '@/components/auth-provider';
-import { Croissant, Languages, Check, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { Croissant, Languages, Check, Eye, EyeOff, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { LanguageContext, supportedLanguages } from '@/components/language-provider';
 import {
   DropdownMenu,
@@ -19,51 +19,85 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import type { User } from '@/lib/types';
 
 
 export default function LoginPage() {
-  const { login } = useContext(AuthContext);
+  const { login, verifyAdminCode } = useContext(AuthContext);
   const { language, setLanguage, t } = useContext(LanguageContext);
   const router = useRouter();
 
+  const [loginStep, setLoginStep] = useState<'credentials' | 'verification'>('credentials');
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({ username: false, password: false });
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({ username: false, password: false, code: false });
+  
   const usernameInputRef = useRef<HTMLInputElement>(null);
+  const codeInputRef = useRef<HTMLInputElement>(null);
+  const pendingAdminUser = useRef<User | null>(null);
 
   const handleLogin = async () => {
-    // Reset errors
     setError('');
-    const newValidationErrors = {
-      username: !username,
-      password: !password,
-    };
+    const newValidationErrors = { username: !username, password: !password, code: false };
     setValidationErrors(newValidationErrors);
 
-    // If there are validation errors, stop here.
     if (newValidationErrors.username || newValidationErrors.password) {
       return;
     }
 
     try {
-      const success = await login(username, password);
-      if (success) {
-        router.push('/dashboard');
+      const result = await login(username, password);
+      if (result.success) {
+        if (result.user.role === 'admin') {
+          // Admin user needs to verify code
+          pendingAdminUser.current = result.user;
+          setLoginStep('verification');
+          setTimeout(() => codeInputRef.current?.focus(), 100);
+        } else {
+          // Other users are logged in directly
+          router.push('/dashboard');
+        }
       } else {
-        const errorMessage = t('invalid_credentials');
-        setError(errorMessage);
-        setIsErrorDialogOpen(true);
-        setPassword('');
-        usernameInputRef.current?.focus();
+        showErrorDialog(t('invalid_credentials'));
       }
     } catch (err: any) {
-      setError(err.message);
-      setIsErrorDialogOpen(true);
-      setPassword('');
+      showErrorDialog(err.message);
+    }
+  };
+
+  const handleVerification = async () => {
+    setError('');
+    if (!verificationCode) {
+      setValidationErrors(p => ({ ...p, code: true }));
+      return;
+    }
+
+    if (pendingAdminUser.current) {
+        const success = await verifyAdminCode(pendingAdminUser.current.id, verificationCode);
+        if (success) {
+            router.push('/dashboard');
+        } else {
+            showErrorDialog(t('invalid_verification_code'));
+        }
+    }
+  }
+
+  const showErrorDialog = (message: string) => {
+    setError(message);
+    setIsErrorDialogOpen(true);
+    setPassword('');
+    setVerificationCode('');
+    if (loginStep === 'credentials') {
       usernameInputRef.current?.focus();
+    } else {
+      codeInputRef.current?.focus();
     }
   };
   
@@ -71,7 +105,9 @@ export default function LoginPage() {
     setIsErrorDialogOpen(false);
   }
 
-  const isFormInvalid = !username || !password;
+  const isFormInvalid = loginStep === 'credentials' 
+    ? !username || !password 
+    : !verificationCode || verificationCode.length < 6;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -119,69 +155,110 @@ export default function LoginPage() {
       </div>
 
       <Card className="w-full max-w-sm mt-12 shadow-2xl">
-        <CardHeader>
-          <CardTitle className="text-2xl font-headline">{t('login_welcome_back')}</CardTitle>
-          <CardDescription>{t('login_enter_credentials')}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="username" className={cn(validationErrors.username && "text-destructive")}>
-              {t('username')}
-              {validationErrors.username && <span className="text-destructive ml-1">*</span>}
-            </Label>
-            <Input 
-              id="username" 
-              ref={usernameInputRef}
-              type="text" 
-              required 
-              value={username}
-              className={cn(validationErrors.username && "border-destructive focus-visible:ring-destructive")}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (validationErrors.username) setValidationErrors(p => ({...p, username: false}));
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password" className={cn(validationErrors.password && "text-destructive")}>
-              {t('password')}
-              {validationErrors.password && <span className="text-destructive ml-1">*</span>}
-            </Label>
-            <div className="relative">
-              <Input 
-                id="password" 
-                type={showPassword ? "text" : "password"} 
-                required 
-                value={password}
-                className={cn(validationErrors.password && "border-destructive focus-visible:ring-destructive")}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (validationErrors.password) setValidationErrors(p => ({...p, password: false}));
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        {loginStep === 'credentials' ? (
+          <>
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline">{t('login_welcome_back')}</CardTitle>
+              <CardDescription>{t('login_enter_credentials')}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username" className={cn(validationErrors.username && "text-destructive")}>
+                  {t('username')}
+                  {validationErrors.username && <span className="text-destructive ml-1">*</span>}
+                </Label>
+                <Input 
+                  id="username" 
+                  ref={usernameInputRef}
+                  type="text" 
+                  required 
+                  value={username}
+                  className={cn(validationErrors.username && "border-destructive focus-visible:ring-destructive")}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (validationErrors.username) setValidationErrors(p => ({...p, username: false}));
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password" className={cn(validationErrors.password && "text-destructive")}>
+                  {t('password')}
+                  {validationErrors.password && <span className="text-destructive ml-1">*</span>}
+                </Label>
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    value={password}
+                    className={cn(validationErrors.password && "border-destructive focus-visible:ring-destructive")}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (validationErrors.password) setValidationErrors(p => ({...p, password: false}));
+                    }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <Button onClick={handleLogin} className="w-full" disabled={isFormInvalid}>
+                  {t('sign_in')}
+                </Button>
+            </CardContent>
+            <CardFooter className="flex flex-col items-center">
+              <p className="text-xs text-muted-foreground">{t('no_account')}</p>
+              <Button asChild variant="link" size="sm">
+                  <Link href="/signup">{t('create_account_button')}</Link>
               </Button>
-            </div>
-          </div>
-           <Button onClick={handleLogin} className="w-full" disabled={isFormInvalid}>
-              {t('sign_in')}
-            </Button>
-        </CardContent>
-        <CardFooter className="flex flex-col items-center">
-          <p className="text-xs text-muted-foreground">{t('no_account')}</p>
-          <Button asChild variant="link" size="sm">
-              <Link href="/signup">{t('create_account_button')}</Link>
-          </Button>
-        </CardFooter>
+            </CardFooter>
+          </>
+        ) : (
+           <>
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline flex items-center gap-2"><ShieldCheck/> {t('verify_identity_title')}</CardTitle>
+              <CardDescription>{t('verify_identity_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="code" className={cn(validationErrors.code && "text-destructive")}>
+                    {t('verification_code')}
+                    {validationErrors.code && <span className="text-destructive ml-1">*</span>}
+                </Label>
+                 <Input
+                    id="code"
+                    ref={codeInputRef}
+                    type="text"
+                    inputMode='numeric'
+                    maxLength={6}
+                    value={verificationCode}
+                    className={cn("text-center font-mono text-lg tracking-[0.5em]", validationErrors.code && "border-destructive focus-visible:ring-destructive")}
+                    onChange={(e) => {
+                        setVerificationCode(e.target.value.replace(/[^0-9]/g, ''));
+                        if (validationErrors.code) setValidationErrors(p => ({ ...p, code: false }));
+                    }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleVerification()}
+                  />
+              </div>
+               <Button onClick={handleVerification} className="w-full" disabled={isFormInvalid}>
+                  {t('verify_code_button')}
+                </Button>
+            </CardContent>
+             <CardFooter className="flex justify-center">
+              <Button variant="link" size="sm" onClick={() => setLoginStep('credentials')}>
+                {t('back_to_login')}
+              </Button>
+            </CardFooter>
+          </>
+        )}
       </Card>
     </main>
   );

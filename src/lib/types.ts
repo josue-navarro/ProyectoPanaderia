@@ -12,6 +12,7 @@ export interface User {
   address?: string;
   storeId?: string;
   storeName?: string;
+  verificationCode?: string;
 }
 
 export interface Product {

@@ -63,6 +63,7 @@ function UserTable({ title, description, userList, showStore = false, actionButt
                                 <TableHead>{t('user')}</TableHead>
                                 <TableHead>{t('email')}</TableHead>
                                 {showStore && <TableHead>{t('store_assigned')}</TableHead>}
+                                {user?.role === 'superAdmin' && <TableHead>{t('verification_code')}</TableHead>}
                                 <TableHead className="text-center">{t('role_type')}</TableHead>
                                 {user?.role === 'superAdmin' && <TableHead><span className="sr-only">{t('actions')}</span></TableHead>}
                             </TableRow>
@@ -84,6 +85,7 @@ function UserTable({ title, description, userList, showStore = false, actionButt
                                     </TableCell>
                                     <TableCell>{listUser.email}</TableCell>
                                     {showStore && <TableCell>{listUser.storeName || 'N/A'}</TableCell>}
+                                     {user?.role === 'superAdmin' && <TableCell className="font-mono text-center">{listUser.verificationCode}</TableCell>}
                                     <TableCell className="text-center">
                                         <Badge variant={getRoleVariant(listUser.role)}>{t(`role_${listUser.role}`)}</Badge>
                                     </TableCell>

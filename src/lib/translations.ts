@@ -186,7 +186,11 @@ export const translations = {
     delete_admin_confirm_message: 'This action cannot be undone. This will permanently delete the administrator account.',
     cancel: 'Cancel',
     confirm_delete: 'Yes, delete',
-
+    verification_code: 'Verification Code',
+    verify_identity_title: 'Verify Identity',
+    verify_identity_desc: 'Enter the code provided by the super administrator.',
+    verify_code_button: 'Verify Code',
+    invalid_verification_code: 'The verification code is incorrect.',
   },
   es: {
     app_subtitle: 'Los mejores productos horneados, ahora en la nube.',
@@ -374,6 +378,11 @@ export const translations = {
     delete_admin_confirm_message: 'Esta acción no se puede deshacer. Esto eliminará permanentemente la cuenta del administrador.',
     cancel: 'Cancelar',
     confirm_delete: 'Sí, eliminar',
+    verification_code: 'Código de Verificación',
+    verify_identity_title: 'Verificar Identidad',
+    verify_identity_desc: 'Introduce el código proporcionado por el super administrador.',
+    verify_code_button: 'Verificar Código',
+    invalid_verification_code: 'El código de verificación es incorrecto.',
 
   },
   zh: {
@@ -555,6 +564,11 @@ export const translations = {
     delete_admin_confirm_message: '此操作无法撤销。这将永久删除管理员帐户。',
     cancel: '取消',
     confirm_delete: '是的，删除',
+    verification_code: '验证码',
+    verify_identity_title: '验证身份',
+    verify_identity_desc: '输入超级管理员提供的代码。',
+    verify_code_button: '验证代码',
+    invalid_verification_code: '验证码不正确。',
   },
   ja: {
     app_subtitle: '最高の焼き菓子を、クラウドで。',
@@ -735,6 +749,11 @@ export const translations = {
     delete_admin_confirm_message: 'この操作は元に戻せません。これにより、管理者アカウントが完全に削除されます。',
     cancel: 'キャンセル',
     confirm_delete: 'はい、削除します',
+    verification_code: '認証コード',
+    verify_identity_title: '本人確認',
+    verify_identity_desc: 'スーパー管理者から提供されたコードを入力してください。',
+    verify_code_button: 'コードを検証',
+    invalid_verification_code: '認証コードが正しくありません。',
   }
 };
 

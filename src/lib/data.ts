@@ -7,7 +7,7 @@ export const users: User[] = [
         fullName: 'Josue Admin',
         email: 'adm.josue@panaderia.cloud',
         username: 'ADMJosue',
-        password: 'Josue123',
+        password: 'Password123',
         role: 'superAdmin',
         address: '456 Admin Blvd, San Francisco, CA 94103',
     }
