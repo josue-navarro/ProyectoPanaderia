@@ -1,3 +1,4 @@
+
 export const translations = {
   en: {
     app_subtitle: 'The finest baked goods, now in the cloud.',
@@ -153,6 +154,12 @@ export const translations = {
     settings_saved_desc: 'Your appearance settings have been updated.',
     profile_description: 'View and manage your account details.',
 
+    users_title: 'Manage Users',
+    users_description: 'View and manage all registered users in the system.',
+    all_users_title: 'All Users',
+    all_users_description: 'A list of all users from all roles.',
+    user: 'User',
+
   },
   es: {
     app_subtitle: 'Los mejores productos horneados, ahora en la nube.',
@@ -307,6 +314,12 @@ export const translations = {
     settings_saved: 'Configuración Guardada',
     settings_saved_desc: 'Tus ajustes de apariencia han sido actualizados.',
     profile_description: 'Ve y gestiona los detalles de tu cuenta.',
+
+    users_title: 'Gestionar Usuarios',
+    users_description: 'Ver y gestionar todos los usuarios registrados en el sistema.',
+    all_users_title: 'Todos los Usuarios',
+    all_users_description: 'Una lista de todos los usuarios de todos los roles.',
+    user: 'Usuario',
   },
   zh: {
     app_subtitle: '最好的烘焙食品，现在在云端。',
@@ -454,6 +467,11 @@ export const translations = {
     settings_saved: '设置已保存',
     settings_saved_desc: '您的外观设置已更新。',
     profile_description: '查看和管理您的帐户详细信息。',
+    users_title: '管理用户',
+    users_description: '查看和管理系统中所有注册用户。',
+    all_users_title: '所有用户',
+    all_users_description: '所有角色的所有用户列表。',
+    user: '用户',
   },
   ja: {
     app_subtitle: '最高の焼き菓子を、クラウドで。',
@@ -601,6 +619,11 @@ export const translations = {
     settings_saved: '設定が保存されました',
     settings_saved_desc: '外観設定が更新されました。',
     profile_description: 'アカウントの詳細を表示および管理します。',
+    users_title: 'ユーザー管理',
+    users_description: 'システムに登録されているすべてのユーザーを表示および管理します。',
+    all_users_title: 'すべてのユーザー',
+    all_users_description: 'すべての役割のすべてのユーザーのリスト。',
+    user: 'ユーザー',
   }
 };
 
