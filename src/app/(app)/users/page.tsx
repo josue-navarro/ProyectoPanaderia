@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,9 +10,11 @@ import { users } from '@/lib/data';
 import type { User } from '@/lib/types';
 import { LanguageContext } from '@/components/language-provider';
 import { AuthContext } from '@/components/auth-provider';
-import { User2, PlusCircle } from 'lucide-react';
+import { User2, PlusCircle, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -22,8 +24,9 @@ const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
 };
 
-function UserTable({ title, description, userList, showStore = false, actionButton }: { title: string; description: string; userList: User[]; showStore?: boolean; actionButton?: React.ReactNode }) {
+function UserTable({ title, description, userList, showStore = false, actionButton, onUserChange }: { title: string; description: string; userList: User[]; showStore?: boolean; actionButton?: React.ReactNode; onUserChange?: () => void; }) {
     const { t } = useContext(LanguageContext);
+    const { user } = useContext(AuthContext);
 
     const getRoleVariant = (role: User['role']) => {
         switch (role) {
@@ -34,6 +37,14 @@ function UserTable({ title, description, userList, showStore = false, actionButt
             default: return 'default';
         }
     }
+
+    const handleDelete = (userId: string) => {
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex > -1) {
+            users.splice(userIndex, 1);
+            onUserChange?.();
+        }
+    };
     
     return (
         <Card>
@@ -53,28 +64,67 @@ function UserTable({ title, description, userList, showStore = false, actionButt
                                 <TableHead>{t('email')}</TableHead>
                                 {showStore && <TableHead>{t('store_assigned')}</TableHead>}
                                 <TableHead className="text-center">{t('role_type')}</TableHead>
+                                {user?.role === 'superAdmin' && <TableHead><span className="sr-only">{t('actions')}</span></TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {userList.map(user => (
-                                <TableRow key={user.id}>
+                            {userList.map(listUser => (
+                                <TableRow key={listUser.id}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar>
-                                                <AvatarImage src={`https://avatar.vercel.sh/${user.username}.png`} alt={`@${user.username}`} />
-                                                <AvatarFallback>{getInitials(user.fullName)}</AvatarFallback>
+                                                <AvatarImage src={`https://avatar.vercel.sh/${listUser.username}.png`} alt={`@${listUser.username}`} />
+                                                <AvatarFallback>{getInitials(listUser.fullName)}</AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="font-medium">{user.fullName}</p>
-                                                <p className="text-sm text-muted-foreground">@{user.username}</p>
+                                                <p className="font-medium">{listUser.fullName}</p>
+                                                <p className="text-sm text-muted-foreground">@{listUser.username}</p>
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    {showStore && <TableCell>{user.storeName || 'N/A'}</TableCell>}
+                                    <TableCell>{listUser.email}</TableCell>
+                                    {showStore && <TableCell>{listUser.storeName || 'N/A'}</TableCell>}
                                     <TableCell className="text-center">
-                                        <Badge variant={getRoleVariant(user.role)}>{t(`role_${user.role}`)}</Badge>
+                                        <Badge variant={getRoleVariant(listUser.role)}>{t(`role_${listUser.role}`)}</Badge>
                                     </TableCell>
+                                    {user?.role === 'superAdmin' && (
+                                        <TableCell className="text-right">
+                                            <AlertDialog>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">{t('open_menu')}</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <AlertDialogTrigger asChild>
+                                                            <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                <span>{t('delete')}</span>
+                                                            </DropdownMenuItem>
+                                                        </AlertDialogTrigger>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>{t('are_you_sure')}</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            {t('delete_admin_confirm_message')}
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDelete(listUser.id)}>
+                                                            {t('confirm_delete')}
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -93,6 +143,9 @@ function UserTable({ title, description, userList, showStore = false, actionButt
 export default function UsersPage() {
     const { t } = useContext(LanguageContext);
     const { user } = useContext(AuthContext);
+    const [version, setVersion] = useState(0);
+
+    const forceRerender = () => setVersion(v => v + 1);
 
     const adminUsers = users.filter(u => u.role === 'admin');
     const employeeUsers = users.filter(u => u.role === 'employee');
@@ -112,6 +165,7 @@ export default function UsersPage() {
                         description={t('admin_users_description')}
                         userList={adminUsers} 
                         showStore={true}
+                        onUserChange={forceRerender}
                         actionButton={
                              <Button asChild>
                                 <Link href="/signup">

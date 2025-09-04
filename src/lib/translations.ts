@@ -180,6 +180,12 @@ export const translations = {
     customer_users_title: 'Customers',
     customer_users_description: 'Users who purchase on the platform.',
     no_admin_users_message: 'There are no registered admin users.',
+    open_menu: 'Open menu',
+    delete: 'Delete',
+    are_you_sure: 'Are you sure?',
+    delete_admin_confirm_message: 'This action cannot be undone. This will permanently delete the administrator account.',
+    cancel: 'Cancel',
+    confirm_delete: 'Yes, delete',
 
   },
   es: {
@@ -362,6 +368,13 @@ export const translations = {
     customer_users_title: 'Clientes',
     customer_users_description: 'Usuarios que realizan compras en la plataforma.',
     no_admin_users_message: 'No hay usuarios adm registrado.',
+    open_menu: 'Abrir menú',
+    delete: 'Eliminar',
+    are_you_sure: '¿Estás seguro?',
+    delete_admin_confirm_message: 'Esta acción no se puede deshacer. Esto eliminará permanentemente la cuenta del administrador.',
+    cancel: 'Cancelar',
+    confirm_delete: 'Sí, eliminar',
+
   },
   zh: {
     app_subtitle: '最好的烘焙食品，现在在云端。',
@@ -536,6 +549,12 @@ export const translations = {
     customer_users_title: '客户',
     customer_users_description: '在平台上购买的用户。',
     no_admin_users_message: '没有注册的管理员用户。',
+    open_menu: '打开菜单',
+    delete: '删除',
+    are_you_sure: '确定吗？',
+    delete_admin_confirm_message: '此操作无法撤销。这将永久删除管理员帐户。',
+    cancel: '取消',
+    confirm_delete: '是的，删除',
   },
   ja: {
     app_subtitle: '最高の焼き菓子を、クラウドで。',
@@ -710,6 +729,12 @@ export const translations = {
     customer_users_title: '顧客',
     customer_users_description: 'プラットフォームで購入するユーザー。',
     no_admin_users_message: '登録されている管理者ユーザーはいません。',
+    open_menu: 'メニューを開く',
+    delete: '削除',
+    are_you_sure: 'よろしいですか？',
+    delete_admin_confirm_message: 'この操作は元に戻せません。これにより、管理者アカウントが完全に削除されます。',
+    cancel: 'キャンセル',
+    confirm_delete: 'はい、削除します',
   }
 };
 
